@@ -1,177 +1,228 @@
 <!doctype html>
-<html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="robots" content="noindex">
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex"><meta name="theme-color" content="#070909">
 <title>넥트멜레 주문 확인</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@900&family=Nanum+Myeongjo:wght@800&family=Nanum+Gothic:wght@400;700;800&display=swap">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
-/* 매장 기기에 켜 두는 Connector용 화면. 손님 페이지와 같은 메뉴판 언어(흰 종이, 먹색, 검은 띠). */
-:root { --paper: #FFFFFF; --ink: #231815; --gray: #6E6764; --nm: #45C2C6; --nm-deep: #1F8F94; --tint: #F5F3F0; --red: #A3312A;
-  --title: "Cinzel Decorative", Georgia, serif; --serif: "Nanum Myeongjo", serif; --sans: "Nanum Gothic", "Malgun Gothic", sans-serif; color-scheme: light; }
-* { box-sizing: border-box; }
-body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 1.55; word-break: keep-all; overflow-wrap: break-word; }
-.wrap { max-width: 640px; margin: 0 auto; padding: 0 16px 48px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; }
-.top { position: sticky; top: 0; background: var(--paper); padding: 12px 0 10px; border-bottom: 2px solid var(--ink); display: flex; justify-content: space-between; align-items: center; gap: 10px; z-index: 2; }
-.brand { display: inline-flex; align-items: center; gap: 7px; background: var(--ink); color: var(--paper); border-radius: 8px; padding: 4px 11px 3px 6px; font-family: var(--title); font-weight: 900; font-size: 14px; }
-.brand img { width: 20px; height: 20px; }
-.state { font-size: 13.5px; color: var(--gray); text-align: right; }
-.state b { color: var(--nm-deep); }
-h2 { margin: 6px 0 0; font-family: var(--serif); font-weight: 800; font-size: 22px; }
-.btn { font: inherit; font-weight: 800; font-size: 16px; cursor: pointer; background: var(--ink); color: var(--paper); border: 0; border-radius: 10px; padding: 13px 18px; }
-.btn.line { background: var(--paper); color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--ink); }
-.btn.ok { background: var(--nm-deep); }
-.btn.text { background: none; color: var(--ink); text-decoration: underline; padding: 6px 2px; font-size: 14px; }
-.btn:focus-visible, input:focus-visible { outline: 3px solid var(--nm-deep); outline-offset: 3px; }
-.login { display: grid; gap: 12px; padding-top: 12px; }
-.login label { display: grid; gap: 4px; font-size: 14px; color: var(--gray); }
-input { font: inherit; padding: 11px 12px; border: 1.5px solid var(--ink); border-radius: 10px; width: 100%; color: var(--ink); }
-.alarm { background: var(--tint); border-radius: 12px; padding: 14px; display: grid; gap: 10px; }
-.alarm p { margin: 0; font-size: 14.5px; }
-.card { border: 2px solid var(--ink); border-radius: 12px; padding: 16px; display: grid; gap: 10px; }
-.card.new { animation: ring 1s ease-in-out 3; }
-@keyframes ring { 50% { background: #E3F6F6; } }
-.card .meta { display: flex; justify-content: space-between; gap: 10px; font-size: 14px; color: var(--gray); }
-.card .seat { font-weight: 800; color: var(--ink); font-size: 16px; }
-.card h3 { margin: 0; font-size: 22px; line-height: 1.3; }
-.card h3 small { display: block; font-size: 14px; color: var(--gray); font-weight: 400; }
-.chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.chips span { font-size: 13px; background: var(--tint); border-radius: 6px; padding: 1px 8px; }
-.acts { display: grid; grid-template-columns: 2fr 1fr; gap: 10px; }
-.empty { border: 1.5px dashed var(--ink); border-radius: 12px; padding: 18px; text-align: center; color: var(--gray); }
-.done { display: grid; gap: 0; }
-.done div { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; padding: 9px 0; border-bottom: 1.5px dotted var(--ink); font-size: 14.5px; align-items: baseline; }
-.done time { color: var(--gray); font-size: 13px; }
-.tag { font-size: 12.5px; font-weight: 800; border-radius: 5px; padding: 0 6px; background: var(--ink); color: var(--paper); }
-.tag.no { background: var(--red); }
-.err { border: 2px solid var(--red); color: var(--red); border-radius: 10px; padding: 10px 12px; font-size: 14.5px; }
-@media (prefers-reduced-motion: reduce) { .card.new { animation: none; background: #E3F6F6; } }
-</style>
-<div class="wrap">
-  <header class="top"><span class="brand"><img src="nm-emblem.png" alt="">NECTMELE</span><span class="state" id="state"></span></header>
-  <main id="app"></main>
-</div>
+/* Connector용 주문 확인. 어두운 바에서 한눈에 읽고 바로 누르는 화면.
+   손님 화면과 같은 검정 + 청록, Pretendard. 크기 순서: 자리 > 잔 이름 > 기다린 시간 > 설문 답. 누르는 칸은 48px 이상. */
+:root { --bg: #070909; --fg: #F3F6F5; --mute: #9FAEAD; --line: rgba(243,246,245,.14); --card: #121616; --nm: #45C2C6; --on-nm: #04191A;
+  --warn: #FFC56B; --late: #FF9C8F;
+  --sans: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif; --name: "EB Garamond", Georgia, serif; color-scheme: dark; }
+* { box-sizing: border-box; } [hidden] { display: none !important; }
+html { background: var(--bg); -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--sans); font-size: 16px; line-height: 1.55; letter-spacing: -.01em; word-break: keep-all; overflow-wrap: break-word; -webkit-font-smoothing: antialiased; }
+button, input { font: inherit; letter-spacing: inherit; } button { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+:focus-visible { outline: 2px solid var(--nm); outline-offset: 3px; }
+.wrap { max-width: 1080px; margin: 0 auto; padding: 0 max(16px, env(safe-area-inset-right, 0px)) calc(96px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
+.top { position: sticky; top: 0; z-index: 3; background: var(--bg); padding-top: env(safe-area-inset-top, 0px); border-bottom: 1px solid var(--line); }
+.top > div { max-width: 1080px; margin: 0 auto; min-height: 68px; padding: 8px max(16px, env(safe-area-inset-right, 0px)) 8px max(16px, env(safe-area-inset-left, 0px)); display: flex; align-items: center; gap: 12px; }
+.top img { width: 32px; height: 32px; }
+.conn { flex: 1; min-width: 0; font-size: 14px; color: var(--mute); display: flex; align-items: center; gap: 8px; line-height: 1.35; }
+.conn::before { content: ""; flex: none; width: 9px; height: 9px; border-radius: 50%; background: var(--nm); }
+.conn.bad { color: var(--late); } .conn.bad::before { background: var(--late); }
+.btn { min-height: 56px; border: 0; border-radius: 28px; padding: 0 22px; cursor: pointer; font-weight: 700; font-size: 17px; background: var(--fg); color: #0A0D0D; transition: opacity .15s, background-color .15s; }
+.btn:active { opacity: .75; } .btn[disabled] { opacity: .5; cursor: default; }
+.btn.go { background: var(--nm); color: var(--on-nm); } .btn.go:hover { background: #5AD0D4; }
+.btn.line { background: transparent; color: var(--fg); box-shadow: inset 0 0 0 1.5px rgba(243,246,245,.5); } .btn.line:hover { background: rgba(243,246,245,.07); }
+.btn.small { min-height: 48px; font-size: 15px; padding: 0 18px; } .btn.text { background: transparent; color: var(--mute); font-weight: 500; font-size: 15px; min-height: 48px; padding: 0; }
+.snd { transition: none; display: inline-flex; align-items: center; gap: 8px; flex: none; }
+.snd.on { background: transparent; color: var(--nm); padding: 0 4px; cursor: default; opacity: 1; }
+.cols { display: grid; grid-template-columns: minmax(0, 1fr); gap: 48px; padding-top: 28px; }
+h1 { margin: 0 0 20px; font-weight: 800; font-size: clamp(30px, 8vw, 40px); line-height: 1.2; letter-spacing: -.045em; }
+h2 { margin: 0 0 8px; font-weight: 700; font-size: 18px; }
+.list { display: grid; gap: 16px; }
+.card { background: var(--card); border-radius: 24px; padding: 20px; display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 18px; }
+.card.new { animation: ring 1.1s ease-out 3; }
+@keyframes ring { 0% { box-shadow: 0 0 0 0 rgba(69,194,198,.9); } 100% { box-shadow: 0 0 0 18px rgba(69,194,198,0); } }
+.tube { width: 34px; height: 100%; min-height: 150px; max-height: 190px; border-radius: 4px 4px 17px 17px; box-shadow: inset 0 0 0 1.5px rgba(243,246,245,.4); background-repeat: no-repeat; position: relative; }
+.tube::before { content: ""; position: absolute; left: -3px; right: -3px; top: 0; height: 3px; border-radius: 3px; background: rgba(243,246,245,.65); }
+.row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.seat { font-weight: 800; font-size: 24px; line-height: 1.25; letter-spacing: -.03em; min-width: 0; overflow-wrap: anywhere; } .seat.none { color: var(--mute); font-weight: 600; font-size: 19px; }
+.ago { flex: none; font-size: 15px; font-weight: 600; color: var(--mute); font-variant-numeric: tabular-nums; } .ago.warn { color: var(--warn); } .ago.late { color: var(--late); }
+.drink { margin: 12px 0 0; font-weight: 700; font-size: 19px; line-height: 1.35; } .drink span { display: block; font-family: var(--name); font-weight: 500; font-size: 30px; line-height: 1.1; letter-spacing: -.015em; overflow-wrap: anywhere; }
+.drink small { font-weight: 500; font-size: 14px; color: var(--mute); }
+.key { margin: 10px 0 0; font-size: 15px; color: #CBD6D5; } .key b { display: block; margin-top: 4px; font-weight: 700; font-size: 16px; color: var(--warn); }
+details { margin-top: 4px; } summary { cursor: pointer; min-height: 44px; display: inline-flex; align-items: center; font-size: 15px; color: var(--mute); text-decoration: underline; text-underline-offset: 4px; list-style: none; } summary::-webkit-details-marker { display: none; }
+.ans { margin: 4px 0 8px; display: grid; grid-template-columns: 6.2em minmax(0, 1fr); gap: 6px 10px; font-size: 15px; } .ans dt { color: var(--mute); } .ans dd { margin: 0; }
+.acts { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
+.empty { border-radius: 24px; box-shadow: inset 0 0 0 1px var(--line); padding: 28px 20px; color: var(--mute); } .empty b { display: block; color: var(--fg); font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+.arm { background: color-mix(in oklab, var(--nm) 20%, #070909); border-radius: 24px; padding: 20px; margin-bottom: 28px; display: grid; gap: 14px; } .arm b { display: block; font-size: 18px; } .arm p { margin: 0; font-size: 15px; color: #D5E3E3; }
+.done > div { display: grid; grid-template-columns: 4.6em minmax(0, 1fr) auto; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 15px; align-items: baseline; }
+.done time { color: var(--mute); font-size: 14px; font-variant-numeric: tabular-nums; } .done small { display: block; color: var(--mute); font-size: 14px; } .res { font-weight: 700; font-size: 14px; color: var(--nm); } .res.no { color: var(--warn); }
+.login { max-width: 420px; margin: 0 auto; padding-top: 48px; display: grid; gap: 16px; } .login h1 { margin: 0; } .login p { margin: 0; color: var(--mute); }
+.login label { display: grid; gap: 6px; font-size: 15px; } .login input { min-height: 54px; font-size: 16px; padding: 0 16px; border: 1.5px solid rgba(243,246,245,.45); border-radius: 14px; background: var(--card); color: var(--fg); width: 100%; } .login .btn { margin-top: 8px; }
+.err { box-shadow: inset 0 0 0 1.5px var(--late); border-radius: 14px; padding: 12px 16px; font-size: 15px; }
+.toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 5; width: max-content; max-width: calc(100% - 32px); background: var(--fg); color: #0A0D0D; font-weight: 700; border-radius: 18px; padding: 14px 20px; transition: opacity .2s; opacity: 0; visibility: hidden; } .toast.show { opacity: 1; visibility: visible; } .toast.bad { background: var(--late); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+@media (min-width: 520px) { .acts { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); } .card { padding: 24px; } }
+@media (min-width: 900px) { .cols { grid-template-columns: minmax(0, 1fr) 340px; gap: 56px; } }
+@media (prefers-reduced-motion: reduce) { .card.new { animation: none; box-shadow: inset 0 0 0 3px var(--nm); } .toast, .btn { transition: none; } }
+</style></head><body>
+<header class="top"><div><img src="nm-emblem.png" alt="넥트멜레"><div class="conn" id="conn" hidden></div><button class="btn small snd" id="snd" hidden></button></div></header>
+<div class="wrap"><main id="app"></main></div>
+<div class="toast" id="toast" role="status"></div><div class="sr" id="live" aria-live="assertive"></div>
 <script>
-const SB = "https://uitmbiolzywpalifwxfs.supabase.co", SBK = "sb_publishable_VDs5z3a_4Yfh1NT7uK7wUg_Ztbki5fZ";
-const app = document.getElementById("app"), stateEl = document.getElementById("state");
+const SB = "https://uitmbiolzywpalifwxfs.supabase.co", SBK = "sb_publishable_VDs5z3a_4Yfh1NT7uK7wUg_Ztbki5fZ", COLOR = {"lvl": {"술 없이": "#BFE3DA", "술맛 거의 안 나게": "#F1D9A0", "살짝 기분 좋게": "#E2A24E", "술맛 제대로": "#8A4A1F"}, "drink": {"소주": "#D9E7EA", "맥주": "#E6B642", "와인": "#86283A", "위스키": "#A8642A", "칵테일을 꽤 마셔 봤어요": "#45C2C6", "술은 잘 몰라요": "#C9D2C3"}, "fav": {"모히또": "#9CCB6B", "진토닉": "#BFE0DA", "하이볼": "#E9C46A", "깔루아밀크": "#C8A27C", "롱아일랜드 아이스티": "#B5652E", "마가리타": "#E3DD8C", "올드패션드": "#9C5318", "피냐콜라다": "#F1E1B5", "에스프레소마티니": "#4A3022", "네그로니": "#B3262E"}, "style": {"짧고 진하게 음미": "#7C2E2E", "얼음 위에서 천천히": "#A0703A", "길고 시원하게": "#7FC4D6", "부드럽고 크리미하게": "#EADBC2", "따뜻하게": "#C0702F", "한입에": "#2D4A40"}, "sweet": {"달달": "#E58FA0", "적당히": "#E9C98B", "단맛 적게": "#C7D3CF"}, "taste": {"상큼·새콤": "#D7E36A", "쌉싸름": "#B23A2E", "크리미": "#EFE3CC", "커피·초코": "#5A3A26", "톡 쏘는 탄산": "#A9DCEB", "짭짤·감칠맛": "#C4472F"}, "fruit": {"오렌지·자몽": "#F0973B", "파인애플·코코넛": "#F5D66B", "베리·체리·석류": "#B0243F", "복숭아": "#F6B48F", "사과": "#A6C84B", "멜론·바나나": "#B9DE7A", "민트·허브·스파이스": "#4E9A6B", "바닐라·견과": "#D9B98A", "레몬·라임": "#E4E86A"}, "no": {"우유·크림": "#E7E2D8", "커피": "#6B4A33", "코코넛": "#EFE6D3", "민트": "#6FB08A", "탄산": "#B7DCE6", "쓴맛": "#9E3B33", "짠맛·매운맛": "#C9553A"}, "era": {"1880년대 뉴욕": "#7A5A2B", "1920년대 파리": "#3B3247", "1950년대 하와이": "#E07B39", "1980년대 디스코": "#D14B9A", "1990년대 뉴욕": "#C3415B", "2020년대 서울": "#45C2C6"}, "signal": {"혼자 깊어지고 싶은 밤": "#1E3B4A", "누군가와 통하고 싶은 밤": "#1F8F94", "오늘의 작은 승리를 자축하는 밤": "#C9A227"}};
+const $ = id => document.getElementById(id), app = $("app");
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const mem = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { v === null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) {} } };
-let token = null, tokenExp = 0, seen = new Set(), first = true, audio = null, wake = null, pollT = null, lastErr = "";
+const NEEDLOGIN = "다시 로그인해 주세요.";
+let token = null, tokenExp = 0, refreshing = null, rt = mem.get("nm_admin_rt"), seen = new Set(), opened = new Set(), first = true, audio = null, pollT = null, rows = [], sig = "", run = 0, titleT = null, toastT = null;
 
 async function auth(body, grant) {
   const r = await fetch(`${SB}/auth/v1/token?grant_type=${grant}`, { method: "POST", headers: { apikey: SBK, "Content-Type": "application/json" }, body: JSON.stringify(body) });
   const d = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(d.error_description || d.msg || `로그인 실패 (${r.status})`);
+  if (!r.ok) { const e = new Error(d.error_description || d.msg || `로그인 실패 (${r.status})`); e.status = r.status; throw e; }
   token = d.access_token; tokenExp = Date.now() + (d.expires_in - 120) * 1000;
-  mem.set("nm_admin_rt", d.refresh_token); // 비밀번호는 저장하지 않는다
+  rt = d.refresh_token; mem.set("nm_admin_rt", rt); // 비밀번호는 저장하지 않는다
 }
+function needLogin() { const e = new Error(NEEDLOGIN); e.login = true; return e; }
 async function ensureToken() {
   if (token && Date.now() < tokenExp) return;
-  const rt = mem.get("nm_admin_rt");
-  if (!rt) throw new Error("login");
-  try { await auth({ refresh_token: rt }, "refresh_token"); }
-  catch (e) { if (!navigator.onLine) throw e; mem.set("nm_admin_rt", null); throw new Error("다시 로그인이 필요해요"); }
+  if (!rt) throw needLogin();
+  // 갱신은 한 번에 하나만. 인터넷·서버 문제로 실패하면 로그인을 지우지 않고 다음에 다시 한다.
+  refreshing = refreshing || auth({ refresh_token: rt }, "refresh_token").finally(() => { refreshing = null; });
+  try { await refreshing; }
+  catch (e) { if ([400, 401, 403].includes(e.status)) { rt = token = null; mem.set("nm_admin_rt", null); throw needLogin(); } throw e; }
 }
-async function api(path, opt = {}) {
+async function api(path, opt = {}, again = true) {
   await ensureToken();
   const r = await fetch(`${SB}/rest/v1/${path}`, { ...opt, headers: { apikey: SBK, Authorization: `Bearer ${token}`, "Content-Type": "application/json", ...(opt.headers || {}) } });
-  if (r.status === 401) { token = null; throw new Error("다시 로그인이 필요해요"); }
-  if (!r.ok) throw new Error(`불러오지 못했어요 (${r.status})`);
-  return r.status === 204 ? null : r.json();
+  if (r.status === 401) { token = null; if (again) return api(path, opt, false); throw needLogin(); }
+  if (!r.ok) throw new Error(`서버가 답하지 않아요 (${r.status})`);
+  return r.json();
 }
+function toast(t, bad) { const el = $("toast"); el.textContent = t; el.className = "toast show" + (bad ? " bad" : ""); clearTimeout(toastT); toastT = setTimeout(() => { el.className = "toast"; }, 3500); }
+function conn(t, bad) { const el = $("conn"); el.hidden = false; el.textContent = t; el.className = "conn" + (bad ? " bad" : ""); }
 
 function showLogin(msg) {
-  stateEl.textContent = "";
-  app.innerHTML = `<section class="login"><h2>Connector 로그인</h2>
-    <p style="margin:0;color:var(--gray);font-size:14.5px">소셜 스튜디오 앱과 같은 이메일, 비밀번호예요. 한 번 로그인하면 이 기기에서는 계속 유지돼요.</p>
-    ${msg ? `<div class="err">${esc(msg)}</div>` : ""}
-    <label>이메일<input id="em" type="email" autocomplete="username"></label>
-    <label>비밀번호<input id="pw" type="password" autocomplete="current-password"></label>
-    <button class="btn" id="go">로그인</button></section>`;
-  const go = async () => {
-    try { await auth({ email: em.value.trim(), password: pw.value }, "password"); start(); }
-    catch (e) { showLogin(e.message.includes("Invalid") ? "이메일이나 비밀번호가 맞지 않아요. 다시 입력해 주세요." : e.message); }
-  };
-  document.getElementById("go").addEventListener("click", go);
-  document.getElementById("pw").addEventListener("keydown", e => { if (e.key === "Enter") go(); });
+  run++; clearTimeout(pollT); sig = ""; $("conn").hidden = true; $("snd").hidden = true;
+  app.innerHTML = `<form class="login" id="form"><h1>Connector 로그인</h1><p>소셜 스튜디오 앱과 같은 이메일, 비밀번호예요. 한 번 로그인하면 이 기기에서는 계속 유지돼요.</p>
+    ${msg ? `<div class="err" role="alert">${esc(msg)}</div>` : ""}
+    <label>이메일<input id="em" type="email" autocomplete="username" required></label>
+    <label>비밀번호<input id="pw" type="password" autocomplete="current-password" required></label>
+    <button class="btn go" id="go">로그인</button></form>`;
+  $("form").addEventListener("submit", async ev => {
+    ev.preventDefault();
+    const email = $("em").value.trim(), go = $("go"); go.disabled = true; go.textContent = "로그인하는 중이에요";
+    try { await auth({ email, password: $("pw").value }, "password"); start(); }
+    catch (e) {
+      showLogin(e.status === 400 ? "이메일이나 비밀번호가 맞지 않아요. 다시 입력해 주세요." : e.status ? `로그인하지 못했어요 (${e.status}). 잠시 뒤 다시 눌러 주세요.` : "인터넷 연결을 확인하고 다시 눌러 주세요.");
+      $("em").value = email;
+    }
+  });
 }
 
 function beep() {
-  if (!audio) return;
-  const t = audio.currentTime;
-  [0, .22, .44].forEach((d, i) => {
-    const o = audio.createOscillator(), g = audio.createGain();
-    o.frequency.value = [880, 1175, 1568][i]; o.type = "sine";
-    g.gain.setValueAtTime(0, t + d); g.gain.linearRampToValueAtTime(.35, t + d + .02); g.gain.exponentialRampToValueAtTime(.001, t + d + .2);
-    o.connect(g).connect(audio.destination); o.start(t + d); o.stop(t + d + .22);
-  });
+  if (audio) {
+    const t = audio.currentTime;
+    [0, .22, .44].forEach((d, i) => {
+      const o = audio.createOscillator(), g = audio.createGain();
+      o.frequency.value = [880, 1175, 1568][i]; o.type = "sine";
+      g.gain.setValueAtTime(0, t + d); g.gain.linearRampToValueAtTime(.35, t + d + .02); g.gain.exponentialRampToValueAtTime(.001, t + d + .2);
+      o.connect(g).connect(audio.destination); o.start(t + d); o.stop(t + d + .22);
+    });
+  }
   if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
 }
-async function armAlarm() {
-  try { audio = new (window.AudioContext || window.webkitAudioContext)(); await audio.resume(); beep(); } catch (e) {}
-  try { if ("wakeLock" in navigator) wake = await navigator.wakeLock.request("screen"); } catch (e) {}
-  render(window._last || []);
+async function keepAwake() { try { if ("wakeLock" in navigator) await navigator.wakeLock.request("screen"); } catch (e) {} }
+async function arm() {
+  try { const a = new (window.AudioContext || window.webkitAudioContext)(); await a.resume(); audio = a; beep(); } catch (e) { toast("이 기기에서는 소리를 켜지 못했어요.", true); }
+  keepAwake(); render(true);
 }
-document.addEventListener("visibilitychange", async () => {
-  if (document.visibilityState === "visible" && audio && "wakeLock" in navigator) { try { wake = await navigator.wakeLock.request("screen"); } catch (e) {} }
-});
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && audio) { audio.resume().catch(() => {}); keepAwake(); } });
+const BELL = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9a6 6 0 0 1 12 0c0 6 2.5 7 2.5 7h-17S6 15 6 9M10 20a2.2 2.2 0 0 0 4 0"/></svg>`;
 
-const LBL = { lvl: "취함", drink: "평소 술", fav: "좋았던 잔", style: "마시는 방식", sweet: "단맛", taste: "맛", fruit: "향", no: "빼기", era: "시대", signal: "시그널" };
-function chips(a) {
-  if (!a) return "";
-  return Object.keys(LBL).filter(k => a[k] !== undefined && !(Array.isArray(a[k]) && !a[k].length))
-    .map(k => `<span>${LBL[k]}: ${esc(Array.isArray(a[k]) ? a[k].join(", ") : a[k])}</span>`).join("");
+const LBL = { lvl: "취함", drink: "평소 술", fav: "좋았던 잔", style: "마시는 방식", sweet: "단맛", taste: "맛", fruit: "향", no: "빼 주세요", era: "시간여행", signal: "시그널" };
+const val = v => Array.isArray(v) ? v.join(", ") : v;
+function tube(a) {
+  const cs = Object.keys(LBL).filter(k => a[k] !== undefined).map(k => (COLOR[k] || {})[Array.isArray(a[k]) ? a[k][0] : a[k]] || "#B9C4C3"), st = [];
+  cs.forEach((c, i) => st.push(`${c} ${i * 9.2}%`, `${c} ${(i + 1) * 9.2}%`));
+  return cs.length ? `background-image:linear-gradient(to top, ${st.join(",")}, transparent ${cs.length * 9.2}%)` : "";
 }
-const hm = s => new Date(s).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" });
-const ago = s => { const m = Math.round((Date.now() - new Date(s)) / 60000); return m < 1 ? "방금" : `${m}분 전`; };
+function names(s) { const m = String(s || "").match(/^(.*?)\s*\((.*)\)\s*$/); return m ? [m[1], m[2]] : [s, ""]; }
+const hm = s => new Date(s).toLocaleTimeString("ko-KR", { hour: "numeric", minute: "2-digit" });
+const mins = s => Math.max(0, Math.floor((Date.now() - new Date(s)) / 60000));
+function agoPaint() { app.querySelectorAll(".ago").forEach(el => { const m = mins(el.dataset.t); el.textContent = m < 1 ? "방금" : m < 60 ? `${m}분째 기다려요` : `${Math.floor(m / 60)}시간 넘게 기다려요`; el.className = "ago" + (m >= 7 ? " late" : m >= 3 ? " warn" : ""); }); }
 
-function render(rows) {
-  window._last = rows;
-  const pend = rows.filter(r => r.status === "pending"), done = rows.filter(r => r.status !== "pending");
-  stateEl.innerHTML = `대기 <b>${pend.length}</b>건, 오늘 ${rows.length}건<br>${lastErr ? `<span style="color:var(--red)">${esc(lastErr)}</span>` : "4초마다 새로 확인해요"}`;
-  app.innerHTML = `
-    ${audio ? "" : `<section class="alarm"><p>새 주문이 오면 소리와 진동으로 알려 드려요. 이 기기에서 한 번 눌러 주세요. 화면도 꺼지지 않게 유지해요.</p><button class="btn" id="arm">알림 소리 켜기</button></section>`}
-    <h2>확인할 주문</h2>
-    ${pend.length ? pend.map(r => `
-      <article class="card${seen.has(r.id) ? "" : " new"}" data-id="${r.id}">
-        <div class="meta"><span class="seat">${esc(r.seat || "자리 안 적음")}</span><span>${hm(r.created_at)}, ${ago(r.created_at)}</span></div>
-        <h3>No.${r.pick_n} ${esc(r.pick_name)}<small>손님이 이 잔을 골랐어요. 결제를 확인하고 승인하면 손님 화면에 레시피가 열려요.</small></h3>
-        <div class="chips">${chips(r.answers)}</div>
-        <div class="acts"><button class="btn ok" data-act="approved">승인하고 레시피 열기</button><button class="btn line" data-act="declined">다른 잔 권하기</button></div>
-      </article>`).join("") : `<div class="empty">들어온 주문이 없어요. 새 주문이 오면 여기에 떠요.</div>`}
-    <h2>오늘 처리한 주문</h2>
-    <div class="done">${done.length ? done.map(r => `<div><time>${hm(r.created_at)}</time><span>${esc(r.seat || "-")}, No.${r.pick_n} ${esc(r.pick_name)}</span><span class="tag${r.status === "declined" ? " no" : ""}">${r.status === "approved" ? "승인" : "다른 잔"}</span></div>`).join("") : `<p style="color:var(--gray);margin:0">아직 없어요.</p>`}</div>
-    <button class="btn text" id="out">이 기기에서 로그아웃</button>`;
+function card(r) {
+  const a = r.answers && typeof r.answers === "object" ? r.answers : {}, [en, ko] = names(r.pick_name);
+  const key = [a.signal, a.lvl].filter(Boolean).map(esc).join("<br>") + (a.no && a.no.length ? `<b>빼 주세요: ${esc(val(a.no))}</b>` : "");
+  const list = Object.keys(LBL).filter(k => a[k] !== undefined && val(a[k]) !== "").map(k => `<dt>${LBL[k]}</dt><dd>${esc(val(a[k]))}</dd>`).join("");
+  return `<article class="card${seen.has(r.id) ? "" : " new"}" data-id="${esc(r.id)}">
+    <div class="tube" style="${tube(a)}" aria-hidden="true"></div>
+    <div><div class="row"><div class="seat${r.seat ? "" : " none"}">${esc(r.seat || "자리 안 적음")}</div><div class="ago" data-t="${esc(r.created_at)}"></div></div>
+      <p class="drink"><span>${esc(en)}</span>${esc(ko)} <small>No.${Number(r.pick_n)}</small></p>
+      ${key ? `<p class="key">${key}</p>` : ""}
+      ${list ? `<details${opened.has(r.id) ? " open" : ""}><summary>설문 답 모두 보기</summary><dl class="ans">${list}</dl></details>` : ""}</div>
+    <div class="acts"><button class="btn go" data-act="approved">승인하고 레시피 열기</button><button class="btn line" data-act="declined">다른 잔 권하기</button></div>
+  </article>`;
+}
+function render(force) {
+  const pend = rows.filter(r => r.status === "pending").reverse(), done = rows.filter(r => r.status !== "pending"); // 오래 기다린 손님부터
+  const s = JSON.stringify([rows.map(r => r.id + r.status), !!audio]);
+  if (!force && s === sig) { agoPaint(); return; }   // 바뀐 게 없으면 다시 그리지 않는다(누르는 중에 버튼이 바뀌지 않게)
+  sig = s;
+  const b = $("snd"); b.hidden = false; b.className = "btn small snd" + (audio ? " on" : ""); b.innerHTML = BELL + (audio ? "소리 켜짐" : "소리 켜기"); b.disabled = !!audio;
+  app.innerHTML = `<div class="cols"><section>
+      ${audio ? "" : `<div class="arm"><div><b>알림 소리가 꺼져 있어요</b><p>한 번 눌러 두면 새 주문이 올 때 소리로 알려 드리고, 화면도 꺼지지 않게 해요.</p></div><button class="btn" id="arm">알림 소리 켜기</button></div>`}
+      <h1>${pend.length ? `기다리는 주문 ${pend.length}건` : "기다리는 주문이 없어요"}</h1>
+      <div class="list">${pend.length ? pend.map(card).join("") : `<div class="empty"><b>새 주문이 오면 여기에 떠요</b>이 화면을 켜 둔 채로 두세요.</div>`}</div></section>
+    <section><h2>오늘 처리한 주문 ${done.length}건</h2>
+      <div class="done">${done.map(r => { const [en, ko] = names(r.pick_name); return `<div><time>${hm(r.created_at)}</time><span>${esc(r.seat || "자리 안 적음")}<small>${esc(ko || en)}</small></span><span class="res${r.status === "declined" ? " no" : ""}">${r.status === "approved" ? "승인" : "다른 잔"}</span></div>`; }).join("") || `<p style="color:var(--mute);margin:0">아직 없어요.</p>`}</div>
+      <button class="btn text" id="out">이 기기에서 로그아웃</button></section></div>`;
+  agoPaint();
   pend.forEach(r => seen.add(r.id));
-  const arm = document.getElementById("arm"); if (arm) arm.addEventListener("click", armAlarm);
-  document.getElementById("out").addEventListener("click", () => { mem.set("nm_admin_rt", null); token = null; clearTimeout(pollT); showLogin(""); });
-  app.querySelectorAll(".card .btn").forEach(b => b.addEventListener("click", async () => {
-    const id = b.closest(".card").dataset.id;
-    b.disabled = true;
-    try {
-      await api(`nm_orders?id=eq.${id}`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ status: b.dataset.act, decided_at: new Date().toISOString() }) });
-      await load();
-    } catch (e) { b.disabled = false; lastErr = `처리하지 못했어요. 다시 눌러 주세요. (${e.message})`; render(window._last); }
-  }));
+  const armB = $("arm"); if (armB) armB.addEventListener("click", arm);
+  $("out").addEventListener("click", () => { rt = token = null; mem.set("nm_admin_rt", null); rows = []; showLogin(""); });
+  app.querySelectorAll("details").forEach(d => d.addEventListener("toggle", () => { const id = d.closest(".card").dataset.id; d.open ? opened.add(id) : opened.delete(id); }));
+  app.querySelectorAll(".card .btn").forEach(btn => btn.addEventListener("click", () => decide(btn)));
+}
+$("snd").addEventListener("click", () => { if (!audio) arm(); });
+async function decide(btn) {
+  const c = btn.closest(".card"), id = c.dataset.id, act = btn.dataset.act, r = rows.find(x => x.id === id), label = btn.textContent;
+  const bs = [...c.querySelectorAll(".btn")]; bs.forEach(x => { x.disabled = true; }); btn.textContent = "처리하는 중이에요";
+  try {
+    const out = await api(`nm_orders?id=eq.${id}&status=eq.pending`, { method: "PATCH", headers: { Prefer: "return=representation" }, body: JSON.stringify({ status: act, decided_at: new Date().toISOString() }) });
+    if (out.length) { if (r) r.status = act; toast(act === "approved" ? "승인했어요. 손님 화면에 레시피가 열려요." : "손님에게 다른 잔을 권했어요."); render(); }
+    else { toast("이미 처리된 주문이에요.", true); await load(); render(true); }
+  } catch (e) {
+    if (e.login) { showLogin(NEEDLOGIN); return; }
+    bs.forEach(x => { x.disabled = false; }); btn.textContent = label;
+    toast("처리하지 못했어요. 인터넷을 확인하고 다시 눌러 주세요.", true);
+  }
 }
 async function load() {
-  const since = new Date(); since.setHours(since.getHours() < 6 ? -18 : 6, 0, 0, 0); // 영업일 기준: 새벽 6시에 하루가 바뀜
-  const rows = await api(`nm_orders?select=id,created_at,seat,pick_n,pick_name,answers,status&created_at=gte.${encodeURIComponent(since.toISOString())}&order=created_at.desc&limit=200`);
-  const fresh = rows.filter(r => r.status === "pending" && !seen.has(r.id));
-  if (fresh.length && !first) { beep(); document.title = `🔔 새 주문 ${fresh.length}건`; setTimeout(() => document.title = "넥트멜레 주문 확인", 8000); }
-  first = false; lastErr = "";
-  render(rows);
+  const my = run, since = new Date(); since.setHours(since.getHours() < 6 ? -18 : 6, 0, 0, 0); // 영업일 기준: 새벽 6시에 하루가 바뀜
+  const got = await api(`nm_orders?select=id,created_at,seat,pick_n,pick_name,answers,status&created_at=gte.${encodeURIComponent(since.toISOString())}&order=created_at.desc&limit=200`);
+  if (my !== run) return;
+  // 방금 이 기기에서 처리한 주문이, 먼저 떠난 조회 결과 때문에 다시 대기로 보이지 않게 한다
+  const decided = new Map(rows.filter(r => r.status !== "pending").map(r => [r.id, r.status]));
+  got.forEach(r => { if (r.status === "pending" && decided.has(r.id)) r.status = decided.get(r.id); });
+  const fresh = got.filter(r => r.status === "pending" && !seen.has(r.id));
+  rows = got;
+  if (fresh.length && !first) {
+    beep(); $("live").textContent = `새 주문 ${fresh.length}건이 들어왔어요.`;
+    document.title = `새 주문 ${fresh.length}건`; clearTimeout(titleT); titleT = setTimeout(() => { document.title = "넥트멜레 주문 확인"; }, 8000);
+  }
+  first = false; conn("연결됨");
+  // 처리 요청이 진행 중이면 다음 확인 때 그린다
+  if (!app.querySelector(".card .btn[disabled]")) render();
 }
 async function tick() {
-  clearTimeout(pollT);
+  clearTimeout(pollT); const my = run;
   try { await load(); }
   catch (e) {
-    if (e.message === "login" || e.message.includes("로그인")) { showLogin(e.message === "login" ? "" : e.message); return; }
-    lastErr = navigator.onLine ? e.message : "인터넷이 끊겼어요. 연결되면 자동으로 다시 확인해요.";
-    render(window._last || []);
+    if (my !== run) return;
+    if (e.login) { showLogin(NEEDLOGIN); return; }
+    conn(navigator.onLine ? "새 주문을 확인하지 못하고 있어요. 자동으로 다시 시도해요." : "인터넷이 끊겼어요. 연결되면 다시 확인해요.", true);
+    if (!sig) render();
   }
-  pollT = setTimeout(tick, 4000);
+  if (my === run) pollT = setTimeout(tick, 4000);
 }
-function start() { first = true; seen = new Set(); tick(); }
-mem.get("nm_admin_rt") ? start() : showLogin("");
-</script>
+function start() { run++; first = true; sig = ""; rows = []; seen = new Set(); app.innerHTML = `<p style="color:var(--mute);padding-top:28px">주문을 불러오는 중이에요.</p>`; tick(); }
+rt ? start() : showLogin("");
+</script></body></html>
