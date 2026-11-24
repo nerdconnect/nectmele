@@ -118,7 +118,7 @@ body.done .glass .body { border-radius: 0 0 35px 35px; }
 .item .spec, .recipe { margin: 0; }
 .item.first .spec dt, .item.first .from small, .item.first .hits { color: #D5DFDE; }
 .item .hits { margin: 0; font-size: 15px; color: var(--mute); }
-.item .from { font-size: 15px; } .item .from b { font-weight: 600; } .item .from small { display: block; color: var(--mute); font-size: 13.5px; margin-top: 2px; }
+.item .from { margin: 0; font-size: 16px; line-height: 1.65; }
 .order { display: grid; gap: 12px; } .order:empty { display: none; }
 .order .btn { width: 100%; }
 .order label { display: grid; gap: 6px; font-size: 15px; }
@@ -334,13 +334,7 @@ function lineOf(c) {
   return `${parts.length ? parts.join("에 ") + "이 어우러진, " : ""}${ST[c.style[0]] || ""} 한 잔`;
 }
 
-function origin(c) {
-  const note = { "확실": "기록으로 확인된 유래예요.", "대략": "알려진 유래예요. 시기와 장소는 설이 여러 개예요.", "국내 스탠다드": "처음 만들어진 연도와 장소는 기록을 찾지 못했어요.",
-    "일반 조합": "특정한 창시자 없이 바에서 널리 쓰는 조합이에요.", "기록 없음": "널리 알려진 칵테일이지만 처음 만들어진 기록은 찾지 못했어요.", "응용": "클래식을 바탕으로 너드커넥트가 다시 쓴 레시피예요." }[c.conf];
-  if (!note) return "";
-  const head = c.conf === "국내 스탠다드" ? "국내 바에서 많이 쓰는 칵테일" : (c.conf === "확실" || c.conf === "대략") ? `${c.era}, ${c.region}` : c.era;
-  return `<div class="from"><b>${esc(head)}</b><small>${note}</small></div>`;
-}
+function origin(c) { return c.story ? `<p class="from">${esc(c.story)}</p>` : ""; }
 function item(r, max, k) {
   const c = r.c, pct = Math.max(5, Math.min(99, Math.round(r.s / max * 100)));
   const m = c.name.match(/^(.*?)\s*\((.*)\)\s*$/), en = m ? m[1] : c.name, ko = m ? m[2] : "";
