@@ -161,18 +161,18 @@ body.done .tubecol { width: 92px; height: 286px; top: 32px; margin-left: 0; } bo
   </div></aside>
   <div class="col">
     <main id="app"></main>
-    <footer><img src="nc-logo.png" alt="NERDCONNECT"><div>레시피는 Connector가 확인한 뒤에 열려요. 도수는 레시피 양과 얼음이 녹는 양까지 계산한 값이에요.</div></footer>
+    <footer><img src="nc-logo.png" alt="NERDCONNECT"><div>레시피는 Connector가 확인하면 열려요. 도수는 얼음 녹는 것까지 계산했어요.</div></footer>
   </div>
 </div>
 <script>
 const Q = [
   { id: "lvl", t: "오늘은 얼마나 취하고 싶어요?", type: "one", o: [
-    ["술 없이", "논알콜로 즐길래요", "#BFE3DA"], ["술맛 거의 안 나게", "음료처럼 가볍게", "#F1D9A0"],
-    ["살짝 기분 좋게", "적당히 알딸딸하게", "#E2A24E"], ["술맛 제대로", "한 잔을 오래 음미하게", "#8A4A1F"] ] },
-  { id: "drink", t: "평소에 어떤 술을 즐겨요?", why: "자주 마시는 술을 알면 입에 맞는 베이스를 고를 수 있어요.", type: "one", o: [
-    ["소주", "깔끔하고 투명한 술", "#D9E7EA"], ["맥주", "시원한 탄산", "#E6B642"], ["와인", "향긋하고 부드럽게", "#86283A"],
-    ["위스키", "묵직한 오크 향", "#A8642A"], ["칵테일을 꽤 마셔 봤어요", "클래식이 궁금해요", "#45C2C6"], ["술은 잘 몰라요", "처음이라 쉽게", "#C9D2C3"] ] },
-  { id: "fav", t: "최근에 맛있게 마신 칵테일이 있어요?", why: "고른 잔과 닮은 새 잔을 찾아요. 여러 개 골라도 돼요.", type: "many", none: "처음이에요", o: [
+    ["술 없이", "오늘은 안 마실래요", "#BFE3DA"], ["술맛 거의 안 나게", "음료처럼 가볍게", "#F1D9A0"],
+    ["살짝 기분 좋게", "적당히 알딸딸하게", "#E2A24E"], ["술맛 제대로", "한 잔을 오래오래", "#8A4A1F"] ] },
+  { id: "drink", t: "평소에 어떤 술을 즐겨요?", why: "뭘 자주 드시는지 알면 입맛 맞추기가 쉬워요.", type: "one", o: [
+    ["소주", "깔끔한 게 좋아요", "#D9E7EA"], ["맥주", "시원한 게 좋아요", "#E6B642"], ["와인", "향긋한 게 좋아요", "#86283A"],
+    ["위스키", "묵직한 게 좋아요", "#A8642A"], ["칵테일을 꽤 마셔 봤어요", "클래식이 궁금해요", "#45C2C6"], ["술은 잘 몰라요", "처음이라 편하게", "#C9D2C3"] ] },
+  { id: "fav", t: "최근에 맛있게 드신 칵테일 있어요?", why: "그거랑 비슷한 잔을 찾아 드릴게요. 여러 개 골라도 돼요.", type: "many", none: "처음이에요", o: [
     ["모히또", "", "#9CCB6B"], ["진토닉", "", "#BFE0DA"], ["하이볼", "", "#E9C46A"], ["깔루아밀크", "", "#C8A27C"],
     ["롱아일랜드 아이스티", "", "#B5652E"], ["마가리타", "", "#E3DD8C"], ["올드패션드", "", "#9C5318"],
     ["피냐콜라다", "", "#F1E1B5"], ["에스프레소마티니", "", "#4A3022"], ["네그로니", "", "#B3262E"] ] },
@@ -182,23 +182,23 @@ const Q = [
     ["따뜻하게", "머그에 담아 호호", "#C0702F"], ["한입에", "짧게 털어 넣는 샷", "#2D4A40"] ] },
   { id: "sweet", t: "단맛은 어느 정도가 좋아요?", type: "one", o: [
     ["달달", "디저트처럼 달게", "#E58FA0"], ["적당히", "달지도 쓰지도 않게", "#E9C98B"], ["단맛 적게", "드라이하고 깔끔하게", "#C7D3CF"] ] },
-  { id: "taste", t: "끌리는 맛을 골라 주세요", why: "여러 개 골라도 돼요.", type: "many", none: "다 좋아요", o: [
-    ["상큼·새콤", "레몬·라임처럼", "#D7E36A"], ["쌉싸름", "캄파리·허브 같은 어른 맛", "#B23A2E"], ["크리미", "우유·크림처럼 부드럽게", "#EFE3CC"],
+  { id: "taste", t: "어떤 맛이 당겨요?", why: "여러 개 골라도 돼요.", type: "many", none: "다 좋아요", o: [
+    ["상큼·새콤", "레몬·라임처럼", "#D7E36A"], ["쌉싸름", "캄파리나 허브 같은 어른 맛", "#B23A2E"], ["크리미", "우유·크림처럼 부드럽게", "#EFE3CC"],
     ["커피·초코", "디저트 카페 느낌", "#5A3A26"], ["톡 쏘는 탄산", "기포가 터지는 느낌", "#A9DCEB"], ["짭짤·감칠맛", "소금·토마토", "#C4472F"] ] },
-  { id: "fruit", t: "끌리는 향이 있어요?", why: "여러 개 골라도 돼요.", type: "many", none: "상관없어요", o: [
+  { id: "fruit", t: "당기는 향 있어요?", why: "여러 개 골라도 돼요.", type: "many", none: "상관없어요", o: [
     ["오렌지·자몽", "", "#F0973B"], ["파인애플·코코넛", "", "#F5D66B"], ["베리·체리·석류", "", "#B0243F"], ["복숭아", "", "#F6B48F"],
     ["사과", "", "#A6C84B"], ["멜론·바나나", "", "#B9DE7A"], ["민트·허브·스파이스", "민트, 생강, 시나몬", "#4E9A6B"],
     ["바닐라·견과", "아몬드, 바닐라", "#D9B98A"], ["레몬·라임", "", "#E4E86A"] ] },
-  { id: "no", t: "이건 빼 주세요", why: "고른 재료는 결과에서 아예 빠져요. 알레르기가 있으면 Connector에게도 꼭 말해 주세요.", type: "many", none: "없어요", o: [
+  { id: "no", t: "못 드시는 거 있어요?", why: "고른 재료가 들어간 잔은 빼고 찾을게요. 알레르기가 있으면 Connector한테도 꼭 말해 주세요.", type: "many", none: "없어요", o: [
     ["우유·크림", "", "#E7E2D8"], ["커피", "", "#6B4A33"], ["코코넛", "", "#EFE6D3"], ["민트", "", "#6FB08A"],
     ["탄산", "", "#B7DCE6"], ["쓴맛", "", "#9E3B33"], ["짠맛·매운맛", "", "#C9553A"] ] },
-  { id: "era", t: "하루만 시간여행을 간다면?", why: "너드커넥트의 칵테일 아카이브는 시대별로 정리돼 있어요.", type: "one", o: [
-    ["1880년대 뉴욕", "신사들이 모이는 호텔 바", "#7A5A2B"], ["1920년대 파리", "금주법을 피해 온 바텐더들의 비밀 바", "#3B3247"],
+  { id: "era", t: "하루만 시간여행을 간다면 어디로 갈래요?", why: "너드커넥트 칵테일은 시대별로 모아 뒀거든요.", type: "one", o: [
+    ["1880년대 뉴욕", "신사들이 모이던 호텔 바", "#7A5A2B"], ["1920년대 파리", "금주법을 피해 온 바텐더들이 있던 비밀 바", "#3B3247"],
     ["1950년대 하와이", "티키 횃불이 켜진 해변", "#E07B39"], ["1980년대 디스코", "네온 불빛 아래 플로어", "#D14B9A"],
     ["1990년대 뉴욕", "마티니 잔이 빛나는 루프탑", "#C3415B"], ["2020년대 서울", "하이볼과 말차가 있는 요즘 바", "#45C2C6"] ] },
-  { id: "signal", t: "오늘 밤은 어떤 시그널이에요?", why: "너드커넥트는 고독, 연결, 승리로 이야기해요.", type: "one", o: [
-    ["혼자 깊어지고 싶은 밤", "고독, 나에게 집중하는 한 잔", "#1E3B4A"], ["누군가와 통하고 싶은 밤", "연결, 대화가 이어지는 한 잔", "#1F8F94"],
-    ["오늘의 작은 승리를 자축하는 밤", "승리, 잔을 들어 올리는 한 잔", "#C9A227"] ] },
+  { id: "signal", t: "오늘 밤은 어떤 시그널이에요?", why: "고독, 연결, 승리. 너드커넥트가 늘 하는 이야기예요.", type: "one", o: [
+    ["혼자 깊어지고 싶은 밤", "고독. 나한테만 집중할래요", "#1E3B4A"], ["누군가와 통하고 싶은 밤", "연결. 이야기 나누고 싶어요", "#1F8F94"],
+    ["오늘의 작은 승리를 자축하는 밤", "승리. 오늘은 건배할 날", "#C9A227"] ] },
 ];
 const LVL = { "술맛 거의 안 나게": 1, "살짝 기분 좋게": 2, "술맛 제대로": 3, "주문할 때 조절": 2 };
 const SWEET = { "단맛 적게": 0, "적당히": 1, "달달": 2 };
@@ -464,7 +464,7 @@ function renderIntro() {
       <div class="title">
         <img class="mark" src="nm-emblem.png" alt="">
         <h1>열 번 고르면<br>당신의 잔이<br>보여요</h1>
-        <p class="lead">답할 때마다 시험관이 한 층씩 차올라요. 다 차면 칵테일 200잔 가운데 당신과 연결된 잔을 찾아 드려요.</p>
+        <p class="lead">답을 고를 때마다 시험관이 한 층씩 차요. 다 차면 칵테일 200잔 중에서 당신한테 맞는 잔을 찾아 드릴게요.</p>
       </div>
       <div class="mine"></div>
       <button class="btn" id="start">시작하기</button>
@@ -524,12 +524,12 @@ function score(c) {
   if (!noAlc) { const d = Math.abs(LVL[ans.lvl] - (LVL[c.lvl] ?? 2)); s += d === 0 ? 3 : d === 1 ? 1 : -2; if (!d) hits.push(ans.lvl); }
   else { s += 3; hits.push("논알콜"); }
   const b = DRINK[ans.drink];
-  if (b && c.base.some(x => b.includes(x))) { s += 2; hits.push(ans.drink === "칵테일을 꽤 마셔 봤어요" ? "클래식 베이스" : `평소의 ${ans.drink}`); }
+  if (b && c.base.some(x => b.includes(x))) { s += 2; hits.push(ans.drink === "칵테일을 꽤 마셔 봤어요" ? "클래식 베이스" : `평소 마시는 ${ans.drink}`); }
   if (ans.drink === "맥주" && c.taste.includes("톡 쏘는 탄산")) { s += 2; hits.push("맥주처럼 시원한 탄산"); }
-  if (ans.drink === "술은 잘 몰라요" && (c.abv ?? 10) <= 12 && c.sweet !== "단맛 적게") { s += 2; hits.push("처음이어도 편한 맛"); }
+  if (ans.drink === "술은 잘 몰라요" && (c.abv ?? 10) <= 12 && c.sweet !== "단맛 적게") { s += 2; hits.push("처음이어도 편하게 마실 맛"); }
   if (ans.drink === "칵테일을 꽤 마셔 봤어요" && (c.conf === "확실" || c.conf === "대략") && c.ch <= 5) s += 1;
   const favs = (ans.fav || []).map(f => DATA.find(x => x.name.startsWith(FAV[f]))).filter(Boolean);
-  if (favs.length) { const best = Math.max(...favs.map(f => f === c ? 0 : jac(c, f))); s += 4 * best; if (best >= .45) hits.push("좋아한 잔과 닮은 맛"); if (favs.includes(c)) s -= 2; }
+  if (favs.length) { const best = Math.max(...favs.map(f => f === c ? 0 : jac(c, f))); s += 4 * best; if (best >= .45) hits.push("좋아하는 잔이랑 비슷한 맛"); if (favs.includes(c)) s -= 2; }
   if (c.style.includes(STYLE[ans.style])) { s += 3.5; hits.push(ans.style); }
   const sd = Math.abs(SWEET[ans.sweet] - SWEET[c.sweet]);
   s += sd === 0 ? 2 : sd === 1 ? .5 : -1.5; if (!sd) hits.push({ "단맛 적게": "단맛 적게", "적당히": "단맛 적당히", "달달": "달달한 맛" }[c.sweet]);
@@ -539,10 +539,10 @@ function score(c) {
   (ans.fruit || []).forEach(f => { if (c.fruit.includes(f)) { s += 1.5; hits.push(f); } });
   if (!noAlc && ERA[ans.era] === c.ch) { s += 2; hits.push(c.chName); }
   const sig = ans.signal || "";
-  if (sig.startsWith("혼자") && ((c.abv ?? 0) >= 18 || c.style.includes("얼음 위에서 천천히") || c.style.includes("짧고 진하게"))) { s += 1.5; hits.push("고독의 한 잔"); }
-  if (sig.startsWith("누군가") && (c.abv ?? 10) >= 5 && (c.abv ?? 10) <= 17 && (c.taste.includes("상큼·새콤") || c.taste.includes("톡 쏘는 탄산"))) { s += 1.5; hits.push("연결의 한 잔"); }
-  if (sig.startsWith("오늘의") && (c.taste.includes("톡 쏘는 탄산") || c.ch === 6 || c.style.includes("한입에") || c.base.includes("와인"))) { s += 1.5; hits.push("승리의 한 잔"); }
-  if (c.season === SEASON) { s += .6; hits.push(`지금 계절, ${SEASON}`); } else if (c.season === "사계절") s += .3;
+  if (sig.startsWith("혼자") && ((c.abv ?? 0) >= 18 || c.style.includes("얼음 위에서 천천히") || c.style.includes("짧고 진하게"))) { s += 1.5; hits.push("고독한 밤"); }
+  if (sig.startsWith("누군가") && (c.abv ?? 10) >= 5 && (c.abv ?? 10) <= 17 && (c.taste.includes("상큼·새콤") || c.taste.includes("톡 쏘는 탄산"))) { s += 1.5; hits.push("연결되고 싶은 밤"); }
+  if (sig.startsWith("오늘의") && (c.taste.includes("톡 쏘는 탄산") || c.ch === 6 || c.style.includes("한입에") || c.base.includes("와인"))) { s += 1.5; hits.push("승리한 밤"); }
+  if (c.season === SEASON) { s += .6; hits.push(`요즘 같은 ${SEASON}`); } else if (c.season === "사계절") s += .3;
   return { c, s, hits };
 }
 function maxScore() {
@@ -554,12 +554,16 @@ function maxScore() {
 }
 function similar(a, b) { return jac(a, b) >= .7; }
 function lineOf(c) {
-  const parts = [];
-  if (c.taste.length) parts.push(c.taste.slice(0, 2).join(", "));
-  if (c.fruit.length) parts.push(`${c.fruit[0]} 향`);
-  const ST = { "짧고 진하게": "짧고 진하게 음미하는", "얼음 위에서 천천히": "얼음 위에서 천천히 마시는", "길고 시원하게": "길고 시원하게 마시는",
-    "부드럽고 크리미하게": "부드럽게 마시는", "따뜻하게": "따뜻하게 마시는", "한입에": "한입에 털어 넣는" };
-  return `${parts.length ? parts.join("에 ") + "이 어우러진, " : ""}${ST[c.style[0]] || ""} 한 잔`;
+  const T = { "상큼·새콤": ["새콤하고", "새콤해요"], "쌉싸름": ["쌉싸름하고", "쌉싸름해요"], "크리미": ["부드럽고", "부드러워요"],
+    "커피·초코": ["커피·초코 맛에", "커피·초코 맛이 나요"], "톡 쏘는 탄산": ["톡 쏘고", "톡 쏴요"], "짭짤·감칠맛": ["짭짤하고", "짭짤해요"] };
+  const ST = { "짧고 진하게": "작은 잔에 진하게 드세요.", "얼음 위에서 천천히": "얼음 녹여 가며 천천히 드세요.", "길고 시원하게": "시원하게 쭉 드세요.",
+    "부드럽고 크리미하게": c.taste.includes("크리미") ? "디저트처럼 드셔도 좋아요." : "부드럽게 넘어가요.", "따뜻하게": "따뜻할 때 드세요.", "한입에": "한입에 털어 넣으세요." };
+  const t = c.taste.slice(0, 2).map(x => T[x]).filter(Boolean), f = c.fruit[0] ? `${c.fruit[0]}${c.fruit[0].includes("·") ? " 같은" : ""} 향` : "";
+  let s = "";
+  if (t.length === 2) s = `${t[0][0].replace("맛에", "맛이 나고")} ${t[1][1]}.${f ? ` ${f}도 나고요.` : ""}`;
+  else if (t.length === 1) s = f ? `${t[0][0]} ${f}이 나요.` : `${t[0][1]}.`;
+  else if (f) s = `${f}이 나요.`;
+  return [s, ST[c.style[0]] || ""].filter(Boolean).join(" ");
 }
 
 function origin(c) { return c.story ? `<p class="from">${esc(c.story)}</p>` : ""; }
@@ -570,11 +574,11 @@ function item(r, max, k) {
   const abv = c.abv === null ? "주문할 때 조절" : c.abv === 0 ? "논알콜" : `${c.abv}%`;
   return `
   <article class="item${k === 0 ? " first" : ""}">
-    <div class="rank"><span>${["첫 번째 잔", "두 번째 잔", "세 번째 잔"][k] || ""}</span><span>시그널 일치 ${pct}%</span></div>
+    <div class="rank"><span>${["첫 번째 잔", "두 번째 잔", "세 번째 잔"][k] || ""}</span><span>시그널 ${pct}% 일치</span></div>
     <h3><span class="en">${esc(en)}</span>${ko ? `<span class="ko">${esc(ko)}</span>` : ""}</h3>
-    <div class="line">${esc(lineOf(c)).replace(/ 한 잔$/, "&nbsp;한&nbsp;잔")}</div>
+    <div class="line">${esc(lineOf(c))}</div>
     <dl class="spec"><div><dt>잔</dt><dd>${esc(glassKo)}${c.hot ? ", 따뜻하게" : ""}</dd></div><div><dt>도수</dt><dd>${abv}</dd></div></dl>
-    <p class="hits">맞은 답: ${r.hits.map(esc).join(", ")}</p>
+    <p class="hits">이래서 골랐어요. ${r.hits.map(esc).join(", ")}</p>
     ${origin(c)}
     <div class="order" data-n="${c.n}" data-name="${esc(c.name)}"></div>
   </article>`;
@@ -598,13 +602,13 @@ function recipeHTML(r) {
   return `<div class="got"><h4>레시피가 열렸어요</h4><dl class="recipe">
     <div><dt>잔</dt><dd>${t(r.glass)}</dd></div><div><dt>재료</dt><dd>${t(r.ing)}</dd></div><div><dt>만드는 법</dt><dd>${t(r.method)}</dd></div>
     ${r.garnish ? `<div><dt>마무리</dt><dd>${t(r.garnish)}</dd></div>` : ""}
-    ${r.hot ? `<div><dd>따뜻한 칵테일이에요. 뜨거운 물은 Connector에게 부탁해 주세요.</dd></div>` : ""}</dl></div>`;
+    ${r.hot ? `<div><dd>따뜻한 칵테일이에요. 뜨거운 물은 Connector한테 달라고 해 주세요.</dd></div>` : ""}</dl></div>`;
 }
 function stateHTML(o) {
   const s = statusOf(o);
   if (s === "approved") return recipeHTML(o.st.recipe);
-  if (s === "declined") return `<div class="wait">Connector가 다른 잔을 권하고 싶어 해요.<small>바에서 이야기 나눠 주세요. 다른 잔을 다시 골라도 돼요.</small></div>`;
-  return `<div class="wait on">Connector에게 보냈어요. 확인하면 여기에 레시피가 열려요.<small>이 화면을 켜 둔 채로 기다려 주세요.</small></div>`;
+  if (s === "declined") return `<div class="wait">Connector가 다른 잔을 권하고 싶대요.<small>바에서 얘기해 보세요. 다른 잔을 다시 골라도 돼요.</small></div>`;
+  return `<div class="wait on">Connector한테 보냈어요. 확인하면 여기에 레시피가 열려요.<small>화면 끄지 말고 조금만 기다려 주세요.</small></div>`;
 }
 function paintOrders() {
   const pending = Object.values(orders).some(o => statusOf(o) === "pending");
@@ -614,28 +618,28 @@ function paintOrders() {
     if (box.querySelector("input") && !orders[n]) return;   // 자리 적는 중이면 건드리지 않는다
     const o = orders[n];
     if (o) { box.innerHTML = stateHTML(o); return; }
-    box.innerHTML = `<button class="btn${box.closest(".first") ? "" : " line"}" ${pending ? "disabled" : ""}>${pending ? "앞서 고른 잔을 확인 중이에요" : "이 잔으로 할게요"}</button>`;
+    box.innerHTML = `<button class="btn${box.closest(".first") ? "" : " line"}" ${pending ? "disabled" : ""}>${pending ? "먼저 고른 잔을 확인하고 있어요" : "이 잔으로 할게요"}</button>`;
     box.querySelector("button").addEventListener("click", () => askSeat(box));
   });
   const mine = document.querySelector(".mine");
   if (mine) mine.innerHTML = Object.entries(orders).filter(([n, o]) => !shown.has(n) && statusOf(o) !== "declined").map(([n, o]) => {
-    const c = DATA.find(x => String(x.n) === n); return `<div class="box"><b>앞서 고른 잔, ${esc(c ? c.name : "")}</b>${stateHTML(o)}</div>`;
+    const c = DATA.find(x => String(x.n) === n); return `<div class="box"><b>먼저 고른 잔, ${esc(c ? c.name : "")}</b>${stateHTML(o)}</div>`;
   }).join("");
 }
 function askSeat(box) {
-  box.innerHTML = `<label>앉은 자리 (모르면 비워 두세요)<input maxlength="20" placeholder="예: 바 3번"></label>
-    <button class="btn">Connector에게 보내기</button><button class="btn text">취소</button>`;
+  box.innerHTML = `<label>어디 앉으셨어요? (모르면 비워 두세요)<input maxlength="20" placeholder="예: 바 3번"></label>
+    <button class="btn">Connector한테 보내기</button><button class="btn text">취소</button>`;
   const [send, cancel] = box.querySelectorAll("button"), input = box.querySelector("input");
   input.focus();
   cancel.addEventListener("click", () => { box.innerHTML = ""; paintOrders(); });
   send.addEventListener("click", async () => {
-    send.disabled = true; send.textContent = "보내는 중이에요";
+    send.disabled = true; send.textContent = "보내고 있어요";
     try {
       const id = await rpc("nm_order", { p_n: Number(box.dataset.n), p_name: box.dataset.name, p_seat: input.value.trim(), p_answers: ans });
       orders[box.dataset.n] = { id, at: Date.now() }; saveOrders(); paintOrders(); poll();
     } catch (e) {
       send.disabled = false; send.textContent = "다시 보내기";
-      if (!box.querySelector(".err")) box.insertAdjacentHTML("beforeend", `<div class="err" role="alert">보내지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요. 계속 안 되면 Connector에게 말해 주세요.</div>`);
+      if (!box.querySelector(".err")) box.insertAdjacentHTML("beforeend", `<div class="err" role="alert">못 보냈어요. 인터넷 연결을 확인하고 다시 눌러 주세요. 계속 안 되면 Connector한테 말해 주세요.</div>`);
     }
   });
 }
@@ -673,19 +677,19 @@ function renderResult() {
   }
   app.innerHTML = picks.length ? `
     <section>
-      <div class="reshead"><h2 tabindex="-1">당신과<br>연결된 ${picks.length}잔</h2><p>마음에 드는 잔을 고르면 Connector가 확인한 뒤 레시피가 열려요.</p></div>
+      <div class="reshead"><h2 tabindex="-1">당신한테<br>맞는 ${picks.length}잔</h2><p>마음에 드는 잔을 골라 주세요. Connector가 확인하면 레시피가 열려요.</p></div>
       <div class="mine"></div>
       <div class="picks">${picks.map((r, k) => item(r, maxScore(), k)).join("")}</div>
-      <p class="coda">아카이브의 마지막 장은 너드커넥트의 시그니처예요. 이 화면을 Connector에게 보여 주면 이어지는 시그니처를 소개해 드려요.</p>
+      <p class="coda">너드커넥트 시그니처도 궁금하면 이 화면을 Connector한테 보여 주세요. 어울리는 잔을 소개해 드릴게요.</p>
       <div class="endnav"><button class="btn line" id="again">처음부터 다시</button><button class="btn text" id="back">마지막 질문으로</button></div>
     </section>` : `
-    <section class="q"><div class="reshead"><h2 tabindex="-1">딱 맞는 잔이<br>없어요</h2><p>빼 달라고 한 재료를 하나 풀면 다시 찾을 수 있어요.</p></div>
-      <div class="endnav"><button class="btn" id="back">'빼 주세요' 질문으로</button><button class="btn text" id="again">처음부터 다시</button></div></section>`;
+    <section class="q"><div class="reshead"><h2 tabindex="-1">딱 맞는 잔을<br>못 찾았어요</h2><p>못 드신다고 한 재료를 하나만 풀어 주시면 다시 찾아볼게요.</p></div>
+      <div class="endnav"><button class="btn" id="back">재료 다시 고르기</button><button class="btn text" id="again">처음부터 다시</button></div></section>`;
   paintOrders(); poll();
   document.getElementById("back").addEventListener("click", () => { step = picks.length ? Q.length - 1 : Q.findIndex(q => q.id === "no"); go(0); });
   document.getElementById("again").addEventListener("click", () => { ans = {}; go(-99); });
 }
 fetch("cocktails.json").then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
   .then(d => { DATA = d; renderIntro(); poll(); })
-  .catch(() => { app.innerHTML = `<div class="err" role="alert">칵테일 목록을 불러오지 못했어요. 페이지를 새로고침해 주세요.</div>`; });
+  .catch(() => { app.innerHTML = `<div class="err" role="alert">칵테일 목록을 못 불러왔어요. 새로고침해 주세요.</div>`; });
 </script></body></html>

@@ -100,17 +100,17 @@ function conn(t, bad) { const el = $("conn"); el.hidden = false; el.textContent 
 
 function showLogin(msg) {
   run++; clearTimeout(pollT); sig = ""; $("conn").hidden = true; $("snd").hidden = true;
-  app.innerHTML = `<form class="login" id="form"><h1>Connector 로그인</h1><p>소셜 스튜디오 앱과 같은 이메일, 비밀번호예요. 한 번 로그인하면 이 기기에서는 계속 유지돼요.</p>
+  app.innerHTML = `<form class="login" id="form"><h1>Connector 로그인</h1><p>소셜 스튜디오 앱에서 쓰는 이메일이랑 비밀번호예요. 한 번만 로그인하면 이 기기에서는 안 풀려요.</p>
     ${msg ? `<div class="err" role="alert">${esc(msg)}</div>` : ""}
     <label>이메일<input id="em" type="email" autocomplete="username" required></label>
     <label>비밀번호<input id="pw" type="password" autocomplete="current-password" required></label>
     <button class="btn go" id="go">로그인</button></form>`;
   $("form").addEventListener("submit", async ev => {
     ev.preventDefault();
-    const email = $("em").value.trim(), go = $("go"); go.disabled = true; go.textContent = "로그인하는 중이에요";
+    const email = $("em").value.trim(), go = $("go"); go.disabled = true; go.textContent = "로그인하고 있어요";
     try { await auth({ email, password: $("pw").value }, "password"); start(); }
     catch (e) {
-      showLogin(e.status === 400 ? "이메일이나 비밀번호가 맞지 않아요. 다시 입력해 주세요." : e.status ? `로그인하지 못했어요 (${e.status}). 잠시 뒤 다시 눌러 주세요.` : "인터넷 연결을 확인하고 다시 눌러 주세요.");
+      showLogin(e.status === 400 ? "이메일이나 비밀번호가 안 맞아요. 다시 넣어 주세요." : e.status ? `로그인이 안 됐어요 (${e.status}). 조금 있다 다시 눌러 주세요.` : "인터넷 연결을 확인하고 다시 눌러 주세요.");
       $("em").value = email;
     }
   });
@@ -130,7 +130,7 @@ function beep() {
 }
 async function keepAwake() { try { if ("wakeLock" in navigator) await navigator.wakeLock.request("screen"); } catch (e) {} }
 async function arm() {
-  try { const a = new (window.AudioContext || window.webkitAudioContext)(); await a.resume(); audio = a; beep(); } catch (e) { toast("이 기기에서는 소리를 켜지 못했어요.", true); }
+  try { const a = new (window.AudioContext || window.webkitAudioContext)(); await a.resume(); audio = a; beep(); } catch (e) { toast("이 기기에서는 소리가 안 켜져요.", true); }
   keepAwake(); render(true);
 }
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && audio) { audio.resume().catch(() => {}); keepAwake(); } });
@@ -168,9 +168,9 @@ function render(force) {
   sig = s;
   const b = $("snd"); b.hidden = false; b.className = "btn small snd" + (audio ? " on" : ""); b.innerHTML = BELL + (audio ? "소리 켜짐" : "소리 켜기"); b.disabled = !!audio;
   app.innerHTML = `<div class="cols"><section>
-      ${audio ? "" : `<div class="arm"><div><b>알림 소리가 꺼져 있어요</b><p>한 번 눌러 두면 새 주문이 올 때 소리로 알려 드리고, 화면도 꺼지지 않게 해요.</p></div><button class="btn" id="arm">알림 소리 켜기</button></div>`}
-      <h1>${pend.length ? `기다리는 주문 ${pend.length}건` : "기다리는 주문이 없어요"}</h1>
-      <div class="list">${pend.length ? pend.map(card).join("") : `<div class="empty"><b>새 주문이 오면 여기에 떠요</b>이 화면을 켜 둔 채로 두세요.</div>`}</div></section>
+      ${audio ? "" : `<div class="arm"><div><b>알림 소리가 꺼져 있어요</b><p>한 번 눌러 두면 새 주문이 올 때 소리가 나요. 화면도 안 꺼지게 해 둘게요.</p></div><button class="btn" id="arm">알림 소리 켜기</button></div>`}
+      <h1>${pend.length ? `기다리는 주문 ${pend.length}건` : "지금은 주문이 없어요"}</h1>
+      <div class="list">${pend.length ? pend.map(card).join("") : `<div class="empty"><b>새 주문이 오면 여기에 떠요</b>화면은 켜 두세요.</div>`}</div></section>
     <section><h2>오늘 처리한 주문 ${done.length}건</h2>
       <div class="done">${done.map(r => { const [en, ko] = names(r.pick_name); return `<div><time>${hm(r.created_at)}</time><span>${esc(r.seat || "자리 안 적음")}<small>${esc(ko || en)}</small></span><span class="res${r.status === "declined" ? " no" : ""}">${r.status === "approved" ? "승인" : "다른 잔"}</span></div>`; }).join("") || `<p style="color:var(--mute);margin:0">아직 없어요.</p>`}</div>
       <button class="btn text" id="out">이 기기에서 로그아웃</button></section></div>`;
@@ -184,15 +184,15 @@ function render(force) {
 $("snd").addEventListener("click", () => { if (!audio) arm(); });
 async function decide(btn) {
   const c = btn.closest(".card"), id = c.dataset.id, act = btn.dataset.act, r = rows.find(x => x.id === id), label = btn.textContent;
-  const bs = [...c.querySelectorAll(".btn")]; bs.forEach(x => { x.disabled = true; }); btn.textContent = "처리하는 중이에요";
+  const bs = [...c.querySelectorAll(".btn")]; bs.forEach(x => { x.disabled = true; }); btn.textContent = "처리하고 있어요";
   try {
     const out = await api(`nm_orders?id=eq.${id}&status=eq.pending`, { method: "PATCH", headers: { Prefer: "return=representation" }, body: JSON.stringify({ status: act, decided_at: new Date().toISOString() }) });
-    if (out.length) { if (r) r.status = act; toast(act === "approved" ? "승인했어요. 손님 화면에 레시피가 열려요." : "손님에게 다른 잔을 권했어요."); render(); }
+    if (out.length) { if (r) r.status = act; toast(act === "approved" ? "승인했어요. 손님 화면에 레시피가 떠요." : "손님한테 다른 잔을 권했어요."); render(); }
     else { toast("이미 처리된 주문이에요.", true); await load(); render(true); }
   } catch (e) {
     if (e.login) { showLogin(NEEDLOGIN); return; }
     bs.forEach(x => { x.disabled = false; }); btn.textContent = label;
-    toast("처리하지 못했어요. 인터넷을 확인하고 다시 눌러 주세요.", true);
+    toast("처리가 안 됐어요. 인터넷을 확인하고 다시 눌러 주세요.", true);
   }
 }
 async function load() {
@@ -205,7 +205,7 @@ async function load() {
   const fresh = got.filter(r => r.status === "pending" && !seen.has(r.id));
   rows = got;
   if (fresh.length && !first) {
-    beep(); $("live").textContent = `새 주문 ${fresh.length}건이 들어왔어요.`;
+    beep(); $("live").textContent = `새 주문 ${fresh.length}건 들어왔어요.`;
     document.title = `새 주문 ${fresh.length}건`; clearTimeout(titleT); titleT = setTimeout(() => { document.title = "넥트멜레 주문 확인"; }, 8000);
   }
   first = false; conn("연결됨");
@@ -218,11 +218,11 @@ async function tick() {
   catch (e) {
     if (my !== run) return;
     if (e.login) { showLogin(NEEDLOGIN); return; }
-    conn(navigator.onLine ? "새 주문을 확인하지 못하고 있어요. 자동으로 다시 시도해요." : "인터넷이 끊겼어요. 연결되면 다시 확인해요.", true);
+    conn(navigator.onLine ? "지금 새 주문을 못 보고 있어요. 알아서 다시 해 볼게요." : "인터넷이 끊겼어요. 연결되면 다시 확인할게요.", true);
     if (!sig) render();
   }
   if (my === run) pollT = setTimeout(tick, 4000);
 }
-function start() { run++; first = true; sig = ""; rows = []; seen = new Set(); app.innerHTML = `<p style="color:var(--mute);padding-top:28px">주문을 불러오는 중이에요.</p>`; tick(); }
+function start() { run++; first = true; sig = ""; rows = []; seen = new Set(); app.innerHTML = `<p style="color:var(--mute);padding-top:28px">주문을 불러오고 있어요.</p>`; tick(); }
 rt ? start() : showLogin("");
 </script></body></html>
