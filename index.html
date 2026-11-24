@@ -1,177 +1,158 @@
 <!doctype html>
-<html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Nectmele Signal</title>
-<meta name="claude:viewport-fit-sides" content="cover">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Cormorant+Garamond:ital,wght@0,600;1,500&family=Noto+Serif+KR:wght@500;600&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#070909"><title>Nectmele Signal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500&display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
-/* 시안 A '밤의 바': 불 꺼진 카운터 같은 어두운 화면, 시험관 속 색만 조명처럼 빛난다.
-   글꼴: 칵테일 이름 Cormorant Garamond, 질문 Noto Serif KR, 본문 Pretendard, 브랜드 라벨 Cinzel. 한 가지 어두운 화면으로 고정. */
+/* 넥트멜레: 검은 바에 시험관 하나. 열 번 답하면 층층이 차오르고, 화면의 빛은 그 액체에서만 나온다.
+   색: 브랜드 원본대로 검정 + 청록(#45C2C6). 글꼴: 한글은 Pretendard 하나, 영문 칵테일 이름만 EB Garamond(브랜드 매뉴얼 계열).
+   간격 4/8 단위, 누르는 칸 48px 이상, 본문 대비 4.5:1 이상. */
 :root {
-  --paper: #17110F; --ink: #F1E8DA; --gray: #A39588; --line: #3A2F2A; --tint: #221A17;
-  --nm: #45C2C6; --nm-deep: #6FD3D6; --amber: #F3B562; --red: #E07A6E;
-  --latin: "Cinzel", Georgia, serif;
-  --name: "Cormorant Garamond", "Noto Serif KR", Georgia, serif;
-  --serif: "Noto Serif KR", "Nanum Myeongjo", serif;
-  --sans: "Pretendard Variable", Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --bg: #070909; --fg: #F3F6F5; --mute: #9FAEAD; --line: rgba(243,246,245,.14); --card: rgba(243,246,245,.055);
+  --nm: #45C2C6; --glow: #45C2C6; --err: #FF9C8F;
+  --sans: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+  --name: "EB Garamond", "Cormorant Garamond", Georgia, serif;
+  --gut-l: max(20px, env(safe-area-inset-left, 0px)); --gut-r: max(20px, env(safe-area-inset-right, 0px));
+  --ease: cubic-bezier(.22,.8,.24,1);
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
-html { background: var(--paper); }
-body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 1.6;
-  word-break: keep-all; overflow-wrap: break-word; -webkit-font-smoothing: antialiased; }
-body::before { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
-  background: radial-gradient(120% 60% at 50% 0%, rgba(243,181,98,.10), transparent 60%); }
-.wrap { position: relative; z-index: 1; max-width: 560px; margin: 0 auto; padding: 0 max(18px, env(safe-area-inset-right, 0px)) 56px max(18px, env(safe-area-inset-left, 0px));
-  display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; }
-.wrap > * { min-width: 0; }
-.btn { font-family: var(--sans); font-weight: 700; font-size: 16px; cursor: pointer; background: var(--amber); color: #1B120C; border: 0; border-radius: 999px; padding: 14px 22px; letter-spacing: -.01em; }
-.btn.text { background: transparent; color: var(--gray); text-decoration: underline; text-underline-offset: 4px; padding-inline: 2px; font-size: 15px; font-weight: 500; }
-.btn:focus-visible, .opt:focus-visible, input:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+html { background: var(--bg); -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--sans); font-size: 16px; line-height: 1.6;
+  word-break: keep-all; overflow-wrap: break-word; -webkit-font-smoothing: antialiased; letter-spacing: -.01em; }
+button, input { font: inherit; letter-spacing: inherit; }
+button { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+:focus-visible { outline: 2px solid var(--nm); outline-offset: 3px; }
+h2:focus { outline: none; }
+p, .line, .from { text-wrap: pretty; }
+.halo { position: fixed; inset: 0; pointer-events: none; opacity: .3; transition: background-color 1s; background-color: var(--glow);
+  -webkit-mask-image: radial-gradient(60% 46% at 8% 82%, #000, transparent); mask-image: radial-gradient(60% 46% at 8% 82%, #000, transparent); }
+
+.stage { position: relative; max-width: 620px; margin: 0 auto; padding: 0 var(--gut-r) 0 var(--gut-l);
+  display: grid; grid-template-columns: 52px minmax(0, 1fr); column-gap: 24px; }
+
+/* 시험관 */
+.tubecol { position: sticky; top: 0; height: 100vh; height: 100svh; padding: 20px 0 calc(24px + env(safe-area-inset-bottom, 0px)); }
+.glass { position: relative; height: 100%; width: 52px; margin: 0 auto; border-radius: 8px 8px 26px 26px; }
+.glass .body { position: absolute; inset: 6px 3px 0; border-radius: 0 0 23px 23px; overflow: hidden; background: rgba(243,246,245,.04);
+  box-shadow: inset 0 0 0 1px rgba(243,246,245,.28), inset 6px 0 10px -6px rgba(243,246,245,.25), inset -8px 0 14px -8px rgba(0,0,0,.8); }
+.glass .lip { position: absolute; top: 0; left: 0; right: 0; height: 10px; border-radius: 50%; border: 1.5px solid rgba(243,246,245,.6); background: rgba(7,9,9,.6); }
+.glass .liq { position: absolute; inset: 0; transform: translateY(100%); transition: transform .9s var(--ease); }
+.glass .liq .fill { position: absolute; inset: 0; transition: transform .9s var(--ease); }
+.glass .liq .top { position: absolute; top: -5px; left: 0; right: 0; height: 10px; border-radius: 50%; background: var(--glow); filter: brightness(1.25); transition: background-color .6s; }
+.glass .shine { position: absolute; top: 18px; bottom: 34px; left: 10px; width: 5px; border-radius: 5px; background: linear-gradient(rgba(255,255,255,.5), rgba(255,255,255,.08) 70%, transparent); }
+.glass .marks { position: absolute; right: 3px; top: 6px; bottom: 0; width: 9px; }
+.glass .marks i { position: absolute; right: 0; width: 8px; height: 1px; background: rgba(243,246,245,.45); }
+.glass .stream { position: absolute; top: 4px; left: 50%; width: 4px; margin-left: -2px; height: 100%; border-radius: 4px; background: var(--glow); transform: scaleY(0); transform-origin: top; opacity: 0; }
+.glass.pour .stream { animation: pour .75s ease-in; }
+@keyframes pour { 0% { transform: scaleY(0); opacity: 1; } 45% { transform: scaleY(1); opacity: 1; } 100% { transform: scaleY(1); opacity: 0; } }
+
+.col { min-width: 0; min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; }
+#app { flex: 1; display: flex; flex-direction: column; }
+#app > * { animation: enter .35s var(--ease); }
+@keyframes enter { from { transform: translateX(10px); opacity: .4; } }
+
+.btn { min-height: 54px; border: 0; border-radius: 27px; padding: 0 24px; cursor: pointer; font-weight: 700; font-size: 17px; background: var(--fg); color: #0A0D0D; transition: background-color .15s, opacity .15s; }
+.btn:hover { background: #fff; } .btn:active { opacity: .8; }
+.btn.line { background: transparent; color: var(--fg); box-shadow: inset 0 0 0 1.5px rgba(243,246,245,.5); }
+.btn.line:hover { background: var(--card); }
+.btn.text { background: transparent; color: var(--mute); font-weight: 500; font-size: 15px; min-height: 48px; padding: 0 8px; }
+.btn[disabled] { opacity: .55; cursor: default; }
 
 /* 첫 화면 */
-.hero { display: grid; gap: 18px; justify-items: center; text-align: center; padding-top: 40px; }
-.hero > * { width: 100%; }
-.hero .logo { width: min(190px, 52vw); height: auto; filter: invert(1) sepia(.15); opacity: .92; }
-.hero .dash2 { height: 1px; background: var(--line); width: 60%; justify-self: center; }
-.hero .bar { display: flex; align-items: center; justify-content: center; gap: 10px; font-family: var(--latin); font-weight: 700; font-size: 15px; letter-spacing: .22em; color: var(--amber); }
-.hero .bar img { width: 22px; height: 22px; }
-.hero .sub { display: none; }
-.hero .motto { margin: 6px 0 0; font-family: var(--serif); font-weight: 600; font-size: clamp(22px, 6vw, 28px); line-height: 1.5; text-wrap: balance; letter-spacing: -.02em; }
-.hero .en { font-family: var(--name); font-style: italic; font-size: 18px; color: var(--gray); margin-top: -8px; }
-.hero .rack { margin-top: 10px; padding: 0 10px; }
-.hero .rack .tube { height: clamp(74px, 21vw, 100px); }
-.hero .rack-base { height: 1px; background: var(--ink); opacity: .5; margin-top: 4px; }
-.hero .how { font-size: 14.5px; color: var(--gray); margin: 0; }
-.hero .btn { width: 100%; padding: 16px; font-size: 17px; }
-
-/* 질문 화면 머리 */
-.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 2; background: var(--paper); padding: 16px 0 12px; display: grid; gap: 12px; border-bottom: 1px solid var(--line); }
-.top-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.brand { display: inline-flex; align-items: center; gap: 8px; font-family: var(--latin); font-weight: 700; font-size: 13px; letter-spacing: .2em; color: var(--ink); }
-.brand img { width: 18px; height: 18px; }
-.count { font-family: var(--name); font-size: 17px; color: var(--gray); white-space: nowrap; font-variant-numeric: lining-nums; }
-.count b { color: var(--ink); font-weight: 600; font-size: 20px; }
-.rack { display: grid; grid-template-columns: repeat(10, 1fr); gap: clamp(5px, 2vw, 10px); align-items: end; padding: 0 4px; }
-.tube { position: relative; height: 30px; border: 1.5px solid rgba(241,232,218,.75); border-top: 0; border-radius: 0 0 999px 999px; overflow: hidden; }
-.tube i { position: absolute; left: 0; right: 0; bottom: 0; height: 0; background: var(--c, var(--nm)); box-shadow: 0 0 12px var(--c, var(--nm)); transition: height .5s cubic-bezier(.3,.7,.2,1); }
-.tube.filled i { height: 78%; }
-.tube.now { border-color: var(--amber); }
+.hero { flex: 1; display: flex; flex-direction: column; padding: 28px 0 calc(24px + env(safe-area-inset-bottom, 0px)); gap: 20px; }
+.hero .logo { width: 148px; height: auto; filter: invert(1); align-self: flex-start; }
+.hero .title { margin-top: auto; }
+.hero .mark { width: 52px; height: 52px; display: block; margin-bottom: 20px; }
+.hero h1 { margin: 0; font-weight: 800; font-size: clamp(38px, 11vw, 56px); line-height: 1.18; letter-spacing: -.045em; }
+.hero .lead { margin: 16px 0 0; color: var(--mute); font-size: 16px; max-width: 22em; }
+.hero .btn { width: 100%; margin-top: 12px; }
 
 /* 질문 */
-.q { display: grid; gap: 18px; }
-.q .eyebrow { font-family: var(--latin); font-size: 12px; letter-spacing: .18em; color: var(--amber); margin: 6px 0 -12px; }
-.q h2 { margin: 0; font-family: var(--serif); font-weight: 600; font-size: clamp(25px, 6.8vw, 30px); line-height: 1.4; letter-spacing: -.03em; text-wrap: balance; }
-.q .why { margin: -8px 0 0; color: var(--gray); font-size: 14.5px; }
-.opts { display: grid; gap: 0; border-top: 1px solid var(--line); }
-.opts.two { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 18px; }
-.opt { font: inherit; color: var(--ink); background: transparent; text-align: left; cursor: pointer; border: 0; border-bottom: 1px solid var(--line);
-  padding: 14px 4px; min-height: 58px; display: grid; grid-template-columns: 14px 1fr auto; gap: 14px; align-items: center; transition: background-color .2s; }
-.opt > span { min-width: 0; }
-.vial { position: relative; width: 12px; height: 28px; border: 1.5px solid rgba(241,232,218,.7); border-top: 0; border-radius: 0 0 99px 99px; overflow: hidden; }
-.vial::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 28%; background: var(--c, #5A4F49); transition: height .3s cubic-bezier(.3,.7,.2,1), box-shadow .3s; }
-.opt b { display: block; font-weight: 600; font-size: 17px; line-height: 1.35; letter-spacing: -.02em; overflow-wrap: anywhere; }
-.opt small { display: block; font-size: 13.5px; color: var(--gray); line-height: 1.45; margin-top: 2px; }
-.opt .tick { width: 20px; height: 20px; border: 1.5px solid var(--gray); border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 800; color: transparent; }
-.opt:hover { background: rgba(241,232,218,.03); }
-.opt:hover .vial::after { height: 55%; }
-.opt[aria-pressed="true"] { background: rgba(243,181,98,.07); }
-.opt[aria-pressed="true"] b { color: var(--amber); }
-.opt[aria-pressed="true"] .vial { border-color: var(--ink); }
-.opt[aria-pressed="true"] .vial::after { height: 90%; box-shadow: 0 0 14px var(--c, var(--amber)); }
-.opt[aria-pressed="true"] .tick { background: var(--amber); border-color: var(--amber); color: #1B120C; }
-.opt.none b { color: var(--gray); font-weight: 500; }
-.nav { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 16px; margin-top: 6px; }
+.bar { display: flex; align-items: center; justify-content: space-between; height: 64px; margin-left: -12px; }
+.iconbtn { width: 48px; height: 48px; display: grid; place-items: center; background: none; border: 0; color: var(--fg); cursor: pointer; border-radius: 50%; }
+.iconbtn:hover { background: var(--card); }
+.count { font-size: 15px; color: var(--mute); font-variant-numeric: tabular-nums; }
+.count b { color: var(--fg); font-weight: 700; }
+.q { flex: 1; display: flex; flex-direction: column; }
+.q h2 { margin: 12px 0 0; font-weight: 800; font-size: clamp(28px, 8vw, 38px); line-height: 1.26; letter-spacing: -.04em; text-wrap: balance; }
+.q .why { margin: 12px 0 0; color: var(--mute); font-size: 15px; line-height: 1.55; }
+.opts { display: grid; gap: 8px; margin: 28px 0 24px; }
+.opt { --edge: color-mix(in oklab, var(--c, #8A9896) 62%, white); position: relative; text-align: left; color: var(--fg); background: var(--card); border: 0; border-radius: 16px; cursor: pointer;
+  min-height: 64px; padding: 12px 16px; display: flex; flex-direction: column; justify-content: center; transition: background-color .18s, box-shadow .18s; }
+.opt b { font-weight: 700; font-size: 17px; line-height: 1.35; letter-spacing: -.025em; }
+.opt small { font-size: 14px; color: var(--mute); line-height: 1.45; margin-top: 2px; }
+.opt:hover { background: rgba(243,246,245,.09); }
+.opt:active { background: rgba(243,246,245,.14); }
+.opt[aria-pressed="true"] { background: color-mix(in oklab, var(--c, #8A9896) 34%, #070909); box-shadow: inset 0 0 0 2px var(--edge); }
+.opt[aria-pressed="true"] small { color: #DCE5E4; }
+.opts.chips { display: flex; flex-wrap: wrap; gap: 10px 8px; }
+.opts.chips .opt { min-height: 50px; padding: 0 18px; border-radius: 25px; }
+.opts.chips .opt b { font-size: 16px; font-weight: 600; }
+.opts.chips small { display: none; }
+.opt.none { background: transparent; box-shadow: inset 0 0 0 1px var(--line); }
+.opt.none b { font-weight: 500; color: var(--mute); }
+.nav { position: sticky; bottom: 0; margin-top: auto; padding: 20px 0 calc(20px + env(safe-area-inset-bottom, 0px)); pointer-events: none; }
+.nav .btn { width: 100%; pointer-events: auto; box-shadow: 0 0 32px 12px rgba(7,9,9,.75); }
 
 /* 결과 */
-.result-top { display: grid; grid-template-columns: auto 1fr; gap: 22px; align-items: center; padding: 18px 0 4px; }
-.big-tube { width: 50px; height: 200px; border: 2px solid var(--ink); border-top: 0; border-radius: 0 0 999px 999px; overflow: hidden; position: relative; display: flex; flex-direction: column-reverse;
-  box-shadow: 0 0 40px rgba(243,181,98,.25); }
-.big-tube span { display: block; height: 8.6%; background: var(--c); }
-.big-tube span:first-child { height: 10%; }
-.result-top p { margin: 10px 0 0; font-size: 14.5px; color: var(--gray); }
-.picks { display: grid; gap: 28px; padding-top: 6px; }
-.item { display: grid; gap: 12px; padding: 22px 0 0; border-top: 1px solid var(--line); position: relative; }
-.item .rank { font-family: var(--latin); font-size: 12px; letter-spacing: .18em; color: var(--gray); }
-.item.first .rank { color: var(--amber); }
-.item h3 { margin: -4px 0 0; font-weight: 400; line-height: 1.1; }
-.item h3 .n { display: block; font-family: var(--sans); font-size: 13px; color: var(--gray); margin-bottom: 6px; }
-.item h3 .en { font-family: var(--name); font-weight: 600; font-size: 40px; letter-spacing: -.01em; }
-.item h3 .ko { display: block; font-family: var(--serif); font-size: 15px; color: var(--gray); margin-top: 6px; }
-.item .line { font-family: var(--serif); font-size: 15.5px; line-height: 1.6; }
-.item .spec { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 9px 0; font-size: 15px; }
-.item .spec > span:first-child { font-family: var(--name); font-size: 19px; font-style: italic; }
-.item .spec b { font-weight: 700; font-size: 18px; color: var(--amber); }
-.item .spec small { font-size: 11px; color: var(--gray); }
-.chapter { font-size: 14px; color: var(--gray); }
-.chapter b { font-family: var(--latin); font-weight: 700; color: var(--ink); margin-right: 8px; letter-spacing: .05em; }
-.match { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 12px; font-size: 13px; color: var(--gray); }
-.match i { height: 3px; background: var(--line); border-radius: 3px; position: relative; overflow: hidden; }
-.match i::before { content: ""; position: absolute; inset: 0 auto 0 0; width: var(--w); background: var(--amber); box-shadow: 0 0 8px var(--amber); }
-.why-list { display: flex; flex-wrap: wrap; gap: 6px; }
-.why-list span { font-size: 12.5px; color: var(--ink); border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px; }
-.origin { font-family: var(--serif); font-size: 14.5px; border-left: 2px solid var(--amber); padding: 2px 0 2px 12px; }
-.origin small { display: block; color: var(--gray); font-family: var(--sans); font-size: 12.5px; margin-top: 2px; }
-.recipe { margin: 10px 0 0; display: grid; grid-template-columns: 5em 1fr; gap: 10px 12px; font-size: 15px; }
-.recipe dt { color: var(--gray); font-size: 13.5px; }
-.recipe dd { margin: 0; white-space: pre-line; min-width: 0; }
-.recipe .note { grid-column: 1 / -1; color: var(--gray); font-size: 13.5px; }
-.order input { background: var(--tint); color: var(--ink); border-color: var(--line) !important; }
-.order .btn.line { background: transparent !important; color: var(--amber) !important; box-shadow: inset 0 0 0 1.5px var(--amber) !important; }
-.order .btn:not(.line):not(.text) { background: var(--amber); color: #1B120C; }
-.wait { background: var(--tint) !important; }
-.got { border-top: 1px solid var(--amber) !important; }
-.got h4 { color: var(--amber); font-weight: 600 !important; }
-.coda { display: grid; gap: 10px; text-align: center; margin-top: 10px; padding-top: 24px; border-top: 1px solid var(--line); }
-.coda .bar { font-family: var(--latin); font-weight: 700; letter-spacing: .25em; color: var(--amber); font-size: 15px; }
-.coda p { margin: 0; font-family: var(--serif); font-size: 15px; color: var(--gray); }
-.err { border: 1px solid var(--red); color: var(--ink); border-radius: 12px; padding: 12px 14px; }
-footer { display: grid; justify-items: center; gap: 8px; padding-top: 8px; }
-footer .dash2 { height: 1px; background: var(--line); }
-footer img { width: 90px; height: auto; filter: invert(1); opacity: .6; }
-footer .mot { font-family: var(--latin); font-size: 11.5px; letter-spacing: .14em; color: var(--gray); text-align: center; }
-footer .note { font-size: 12.5px; color: var(--gray); text-align: center; max-width: 30em; }
-body.asking footer, body.intro footer { display: none; }
-body.intro .top { display: none; }
-@media (max-width: 360px) { .opts.two { grid-template-columns: 1fr; } }
-@media (prefers-reduced-motion: reduce) { .tube i, .vial::after, .opt { transition: none; } }
-.opts.two .opt { gap: 10px; }
-.opts.two .opt b { font-size: 15.5px; overflow-wrap: normal; }
-
-.order { display: grid; gap: 10px; }
+body.done .stage { display: block; }
+body.done .tubecol { position: absolute; left: var(--gut-l); top: 40px; height: 270px; width: 76px; padding: 0; }
+body.done .glass { width: 76px; }
+body.done .glass .body { border-radius: 0 0 35px 35px; }
+.reshead { min-height: 342px; padding: 0 0 12px 100px; display: flex; flex-direction: column; justify-content: center; }
+.reshead h2 { margin: 0; font-weight: 800; font-size: clamp(30px, 8.6vw, 44px); line-height: 1.22; letter-spacing: -.045em; }
+.reshead p { margin: 14px 0 0; color: var(--mute); font-size: 15px; }
+.picks { display: grid; gap: 20px; margin-top: 24px; }
+.item { background: var(--card); border-radius: 24px; padding: 24px 20px 20px; display: grid; gap: 16px; }
+.item.first { background: color-mix(in oklab, var(--glow) 24%, #070909); }
+.item .rank { font-size: 14px; color: var(--mute); display: flex; justify-content: space-between; gap: 8px; font-variant-numeric: tabular-nums; }
+.item.first .rank { color: #D5DFDE; }
+.item h3 { margin: -4px 0 0; font-weight: 500; }
+.item .en { display: block; font-family: var(--name); font-weight: 500; font-size: clamp(40px, 11.5vw, 54px); line-height: 1.02; letter-spacing: -.02em; overflow-wrap: anywhere; }
+.item .ko { display: block; font-weight: 600; font-size: 16px; margin-top: 8px; }
+.item .line { font-size: 16px; line-height: 1.6; }
+.item .spec { display: grid; grid-template-columns: 1fr auto; gap: 16px; border-block: 1px solid var(--line); padding: 12px 0; }
+.item .spec dt { font-size: 13px; color: var(--mute); } .item .spec dd { margin: 2px 0 0; font-weight: 600; font-size: 16px; }
+.item .spec, .recipe { margin: 0; }
+.item.first .spec dt, .item.first .from small, .item.first .hits { color: #D5DFDE; }
+.item .hits { margin: 0; font-size: 15px; color: var(--mute); }
+.item .from { font-size: 15px; } .item .from b { font-weight: 600; } .item .from small { display: block; color: var(--mute); font-size: 13.5px; margin-top: 2px; }
+.order { display: grid; gap: 12px; } .order:empty { display: none; }
 .order .btn { width: 100%; }
-.order .btn.line { background: var(--paper); color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--ink); }
-.order .btn[disabled] { opacity: .35; cursor: default; }
-.order label { font-size: 14px; color: var(--gray); display: grid; gap: 4px; }
-.order input { font: inherit; font-size: 16px; padding: 10px 12px; border: 1.5px solid var(--ink); border-radius: 10px; width: 100%; }
-.wait { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: center; background: var(--tint); border-radius: 10px; padding: 12px 14px; font-size: 15px; }
-.wait .vial { height: 34px; }
-.wait .vial::after { animation: fill 2.4s ease-in-out infinite; }
-@keyframes fill { 0%, 100% { height: 15%; } 50% { height: 85%; } }
-.wait small { display: block; color: var(--gray); font-size: 13px; }
-.got { border-top: 2px solid var(--ink); padding-top: 10px; }
-.got h4 { margin: 0 0 4px; font-family: var(--serif); font-size: 17px; }
-@media (prefers-reduced-motion: reduce) { .wait .vial::after { animation: none; height: 60%; } }
-</style>
-
-<div class="wrap">
-  <header class="top" aria-hidden="true">
-    <div class="top-row"><span class="brand"><img src="nm-emblem.png" alt="">NECTMELE SIGNAL</span><span class="count" id="label"></span></div>
-    <div class="rack" id="rack"></div>
-  </header>
-
-  <main id="app" aria-live="polite"></main>
-
-  <footer>
-    <div class="dash2" style="width:100%"></div>
-    <img src="nc-logo.png" alt="">
-    <div class="mot">"BOUND BY SOLITUDE, INFINITE IN VICTORY"</div>
-    <div class="note">레시피는 Connector가 확인한 뒤에 열려요. 도수는 레시피 양과 얼음이 녹는 양까지 계산한 값이에요. 유래가 확실하지 않은 칵테일에는 유래를 적지 않았어요.</div>
-  </footer>
+.order label { display: grid; gap: 6px; font-size: 15px; }
+.order input { min-height: 52px; font-size: 16px; padding: 0 16px; border: 1.5px solid rgba(243,246,245,.45); border-radius: 14px; width: 100%; background: rgba(7,9,9,.5); color: var(--fg); }
+.order input::placeholder { color: var(--mute); }
+.wait { border-radius: 16px; background: rgba(7,9,9,.45); padding: 16px; font-weight: 600; font-size: 16px; line-height: 1.5; }
+.wait small { display: block; color: #C3CFCE; font-weight: 400; font-size: 14px; margin-top: 4px; }
+.wait.on::before { content: ""; display: block; height: 3px; border-radius: 3px; margin-bottom: 12px; background: var(--nm); transform-origin: left; animation: wait 2.4s ease-in-out infinite; }
+@keyframes wait { 0% { transform: scaleX(.08); } 50% { transform: scaleX(1); } 100% { transform: scaleX(.08); } }
+.got h4 { margin: 0 0 12px; font-size: 18px; font-weight: 700; }
+.recipe { display: grid; gap: 12px; font-size: 16px; }
+.recipe dt { color: #C3CFCE; font-size: 13.5px; } .recipe dd { margin: 2px 0 0; white-space: pre-line; }
+.mine { display: grid; gap: 12px; margin-top: 24px; } .mine:empty { display: none; }
+.mine .box { background: var(--card); border-radius: 20px; padding: 18px 18px 20px; display: grid; gap: 12px; }
+.mine .box > b { font-weight: 700; font-size: 17px; }
+.coda { padding: 36px 0 8px; color: var(--mute); font-size: 15px; }
+.endnav { display: grid; gap: 4px; }
+.err { box-shadow: inset 0 0 0 1.5px var(--err); border-radius: 14px; padding: 14px 16px; font-size: 15px; }
+footer { display: none; } body.done footer { display: grid; gap: 14px; padding: 32px 0 calc(40px + env(safe-area-inset-bottom, 0px)); color: var(--mute); font-size: 13.5px; }
+footer img { width: 120px; height: auto; filter: invert(1); opacity: .85; }
+@media (min-width: 700px) { .stage { grid-template-columns: 84px minmax(0, 1fr); column-gap: 56px; } .glass { width: 72px; } .glass .body { border-radius: 0 0 33px 33px; } }
+@media (prefers-reduced-motion: reduce) { .glass .liq, .glass .liq .fill, .halo, #app > * { transition: none; animation: none; } .glass.pour .stream, .wait.on::before { animation: none; } }
+</style></head><body class="intro">
+<div class="halo" aria-hidden="true"></div>
+<div class="stage">
+  <aside class="tubecol" aria-hidden="true"><div class="glass" id="glass">
+    <div class="body"><div class="liq" id="liq"><div class="top"></div><div style="position:absolute;inset:0;overflow:hidden"><div class="fill" id="fill"></div></div></div></div>
+    <div class="marks" id="marks"></div><div class="stream"></div><div class="shine"></div><div class="lip"></div>
+  </div></aside>
+  <div class="col">
+    <main id="app"></main>
+    <footer><img src="nc-logo.png" alt="NERDCONNECT"><div>레시피는 Connector가 확인한 뒤에 열려요. 도수는 레시피 양과 얼음이 녹는 양까지 계산한 값이에요.</div></footer>
+  </div>
 </div>
-
 <script>
 const Q = [
   { id: "lvl", t: "오늘은 얼마나 취하고 싶어요?", type: "one", o: [
@@ -217,65 +198,93 @@ const STYLE = { "짧고 진하게 음미": "짧고 진하게", "얼음 위에서
 const FAV = { "모히또": "Mojito (", "진토닉": "Gin & Tonic (", "하이볼": "Base Spirit Highball", "깔루아밀크": "Kahlúa Milk",
   "롱아일랜드 아이스티": "Long Island Iced Tea", "마가리타": "Margarita (", "올드패션드": "Old Fashioned (", "피냐콜라다": "Piña Colada (",
   "에스프레소마티니": "Espresso Martini", "네그로니": "Negroni" };
-const NO = { "우유·크림": /우유|생크림|베일리스|아이스크림|코코넛밀크/, "커피": /커피|깔루아|에스프레소/, "코코넛": /코코넛|말리부/,
-  "민트": /민트/, "탄산": /탄산|토닉|진저에일|스프라이트|콜라|에너지/, "쓴맛": /캄파리|아페롤|비터스|예거|토닉/, "짠맛·매운맛": /소금|핫소스|우스터|타바스코/ };
 const SEASON = (() => { const m = new Date().getMonth() + 1; return m <= 2 || m === 12 ? "겨울" : m <= 5 ? "봄" : m <= 8 ? "여름" : "가을"; })();
 const STRONG = ["쌉싸름", "커피·초코", "짭짤·감칠맛"];
 
-let DATA = [], step = -1, ans = {};
-const app = document.getElementById("app"), rack = document.getElementById("rack"), label = document.getElementById("label");
+
+let DATA = [], step = -1, ans = {}, busy = false;
+const app = document.getElementById("app"), glass = document.getElementById("glass"), fill = document.getElementById("fill"), liq = document.getElementById("liq");
+const root = document.documentElement, calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-const pad = n => String(n).padStart(2, "0");
-rack.innerHTML = Q.map((_, i) => `<div class="tube" id="tube${i}"><i></i></div>`).join("");
+const BACK = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>`;
+const SAMPLE = ["#8A4A1F", "#E2A24E", "#E9C98B", "#B23A2E", "#F0973B", "#D14B9A", "#1E3B4A", "#45C2C6"];
+document.getElementById("marks").innerHTML = Array.from({ length: 9 }, (_, i) => `<i style="bottom:${(i + 1) * 9.2}%"></i>`).join("");
 
 function colorOf(i) {
   const q = Q[i], a = ans[q.id];
   if (a === undefined) return null;
   const vals = Array.isArray(a) ? a : [a];
-  if (!vals.length) return "#DCD8D2";
-  return (q.o.find(o => o[0] === vals[0]) || [])[2] || "#DCD8D2";
+  return (q.o.find(o => o[0] === vals[0]) || [])[2] || "#B9C4C3";
+}
+// 답한 순서대로 아래에서 위로 쌓는다. 층 사이는 살짝 번지게.
+function paintTube(colors, band = 9.2) {
+  const h = colors.length * band, stops = [];
+  colors.forEach((c, i) => { stops.push(`${c} ${i * band + (i ? 1.4 : 0)}%`, `${c} ${(i + 1) * band - 1.4}%`); });
+  if (colors.length) fill.style.background = `linear-gradient(to top, ${stops.join(", ")}, ${colors[colors.length - 1]} 100%)`;
+  liq.style.transform = `translateY(${100 - h}%)`;
+  fill.style.transform = `translateY(${h - 100}%)`;
+  root.style.setProperty("--glow", colors[colors.length - 1] || "#45C2C6");
 }
 function paint() {
-  Q.forEach((q, i) => {
-    const el = document.getElementById("tube" + i), c = colorOf(i);
-    el.classList.toggle("filled", c !== null); el.classList.toggle("now", i === step);
-    if (c) el.style.setProperty("--c", c);
-  });
-  label.innerHTML = step < Q.length ? `<b>${pad(step + 1)}</b> / 10` : "RESULT";
   document.body.className = step < 0 ? "intro" : step < Q.length ? "asking" : "done";
+  paintTube(step < 0 ? SAMPLE : Q.map((_, i) => colorOf(i)).filter(Boolean), step < 0 ? 11 : 9.2);
+}
+function pour() { glass.classList.remove("pour"); void glass.offsetWidth; glass.classList.add("pour"); }
+
+function renderIntro() {
+  step = -1; paint();
+  app.innerHTML = `
+    <section class="hero">
+      <img class="logo" src="nc-logo.png" alt="NERDCONNECT, Crafted for unique minds">
+      <div class="title">
+        <img class="mark" src="nm-emblem.png" alt="">
+        <h1>열 번 고르면<br>당신의 잔이<br>보여요</h1>
+        <p class="lead">답할 때마다 시험관이 한 층씩 차올라요. 다 차면 칵테일 200잔 가운데 당신과 연결된 잔을 찾아 드려요.</p>
+      </div>
+      <div class="mine"></div>
+      <button class="btn" id="start">시작하기</button>
+    </section>`;
+  document.getElementById("start").addEventListener("click", () => go(1));
+  paintOrders();
 }
 function renderQ() {
   paint();
   const q = Q[step], many = q.type === "many", cur = ans[q.id] ?? (many ? [] : null);
-  const two = q.o.every(o => !o[1]);
-  const tick = many ? `<span class="tick" aria-hidden="true">✓</span>` : "<span></span>";
-  const opts = q.o.map(([v, d, c], i) => `<button class="opt" id="o-${q.id}-${i}" style="--c:${c}" data-v="${esc(v)}" aria-pressed="${many ? cur.includes(v) : cur === v}"><span class="vial" aria-hidden="true"></span><span><b>${esc(v)}</b>${d ? `<small>${esc(d)}</small>` : ""}</span>${tick}</button>`).join("");
+  const chips = q.o.filter(o => !o[1]).length > q.o.length / 2;
+  const opts = q.o.map(([v, d, c], i) => `<button class="opt" id="o-${q.id}-${i}" style="--c:${c}" data-v="${esc(v)}" aria-pressed="${many ? cur.includes(v) : cur === v}"><b>${esc(v)}</b>${d ? `<small>${esc(d)}</small>` : ""}</button>`).join("");
   app.innerHTML = `
     <section class="q">
-      <p class="eyebrow">[SIGNAL_No.${pad(step + 1)}]</p>
-      <h2>${esc(q.t)}</h2>
+      <div class="bar"><button class="iconbtn" id="back" aria-label="이전으로">${BACK}</button><span class="count"><b>${step + 1}</b> / ${Q.length}</span></div>
+      <h2 tabindex="-1">${esc(q.t)}</h2>
       ${q.why ? `<p class="why">${esc(q.why)}</p>` : ""}
-      <div class="opts${two ? " two" : ""}">${opts}${many ? `<button class="opt none" id="o-${q.id}-none" data-v="" aria-pressed="false"><span class="vial" aria-hidden="true"></span><span><b>${esc(q.none)}</b></span><span></span></button>` : ""}</div>
-      <div class="nav">
-        <button class="btn text" id="back">이전</button>
-        ${many ? `<button class="btn" id="next">${step === Q.length - 1 ? "결과 보기" : "다음 질문"}</button>` : "<span></span>"}
-      </div>
+      <div class="opts${chips ? " chips" : ""}">${opts}${many ? `<button class="opt none" id="o-${q.id}-none" data-v="" aria-pressed="${ans[q.id] !== undefined && !cur.length}"><b>${esc(q.none)}</b></button>` : ""}</div>
+      ${many ? `<div class="nav"><button class="btn" id="next">다음</button></div>` : ""}
     </section>`;
-  app.querySelectorAll(".opt").forEach(b => b.addEventListener("click", () => {
+  const all = [...app.querySelectorAll(".opt")];
+  const advance = () => { busy = true; pour(); paint(); setTimeout(() => { busy = false; go(1); }, calm ? 120 : 620); };
+  all.forEach(b => b.addEventListener("click", () => {
+    if (busy) return;
     const v = b.dataset.v;
-    if (!many) { ans[q.id] = v; go(1); return; }
-    if (!v) { ans[q.id] = []; go(1); return; }
-    const set = new Set(ans[q.id] || []); set.has(v) ? set.delete(v) : set.add(v); ans[q.id] = [...set];
-    b.setAttribute("aria-pressed", set.has(v)); paint();
+    if (!many || !v) {
+      ans[q.id] = many ? [] : v;
+      all.forEach(x => x.setAttribute("aria-pressed", x === b));
+      advance(); return;
+    }
+    const set = new Set(ans[q.id] || []); set.has(v) ? set.delete(v) : set.add(v);
+    ans[q.id] = [...set]; b.setAttribute("aria-pressed", set.has(v));
+    const none = app.querySelector(".opt.none"); if (none) none.setAttribute("aria-pressed", "false");
+    if (!set.size) delete ans[q.id];
+    paint();
   }));
-  document.getElementById("back").addEventListener("click", () => go(-1));
+  document.getElementById("back").addEventListener("click", () => { if (!busy) go(-1); });
   const nx = document.getElementById("next");
-  if (nx) nx.addEventListener("click", () => { ans[q.id] = ans[q.id] || []; go(1); });
+  if (nx) nx.addEventListener("click", () => { if (busy) return; ans[q.id] = ans[q.id] || []; advance(); });
 }
 function go(d) {
   step = Math.max(-1, step + d);
   step < 0 ? renderIntro() : step >= Q.length ? renderResult() : renderQ();
-  window.scrollTo({ top: 0, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+  window.scrollTo(0, 0);
+  const h = app.querySelector("h2"); if (h && d) h.focus({ preventScroll: true });
 }
 function feats(c) { return new Set([...c.taste, ...c.fruit, ...c.base, ...c.style, "s:" + c.sweet, "l:" + c.lvl]); }
 function jac(a, b) { const A = feats(a), B = feats(b); const n = [...A].filter(x => B.has(x)).length; return n / new Set([...A, ...B]).size; }
@@ -324,111 +333,107 @@ function lineOf(c) {
     "부드럽고 크리미하게": "부드럽게 마시는", "따뜻하게": "따뜻하게 마시는", "한입에": "한입에 털어 넣는" };
   return `${parts.length ? parts.join("에 ") + "이 어우러진, " : ""}${ST[c.style[0]] || ""} 한 잔`;
 }
+
 function origin(c) {
-  if (c.conf === "확실") return `<div class="origin">${esc(c.era)}, ${esc(c.region)}<small>아카이브 기록</small></div>`;
-  if (c.conf === "대략") return `<div class="origin">${esc(c.era)}, ${esc(c.region)}<small>알려진 유래예요. 시기와 장소는 설이 여러 개예요.</small></div>`;
-  if (c.conf === "국내 스탠다드") return `<div class="origin">국내 바에서 많이 쓰는 칵테일<small>처음 만들어진 연도와 장소는 기록을 찾지 못했어요.</small></div>`;
-  if (c.conf === "일반 조합") return `<div class="origin">${esc(c.era)}<small>특정한 창시자 없이 바에서 널리 쓰는 조합이에요.</small></div>`;
-  if (c.conf === "기록 없음") return `<div class="origin">${esc(c.era)}<small>널리 알려진 칵테일이지만 처음 만들어진 기록은 찾지 못했어요.</small></div>`;
-  if (c.conf === "응용") return `<div class="origin">${esc(c.era)}<small>클래식을 바탕으로 너드커넥트가 다시 쓴 레시피예요.</small></div>`;
-  return "";
+  const note = { "확실": "기록으로 확인된 유래예요.", "대략": "알려진 유래예요. 시기와 장소는 설이 여러 개예요.", "국내 스탠다드": "처음 만들어진 연도와 장소는 기록을 찾지 못했어요.",
+    "일반 조합": "특정한 창시자 없이 바에서 널리 쓰는 조합이에요.", "기록 없음": "널리 알려진 칵테일이지만 처음 만들어진 기록은 찾지 못했어요.", "응용": "클래식을 바탕으로 너드커넥트가 다시 쓴 레시피예요." }[c.conf];
+  if (!note) return "";
+  const head = c.conf === "국내 스탠다드" ? "국내 바에서 많이 쓰는 칵테일" : (c.conf === "확실" || c.conf === "대략") ? `${c.era}, ${c.region}` : c.era;
+  return `<div class="from"><b>${esc(head)}</b><small>${note}</small></div>`;
 }
 function item(r, max, k) {
   const c = r.c, pct = Math.max(5, Math.min(99, Math.round(r.s / max * 100)));
   const m = c.name.match(/^(.*?)\s*\((.*)\)\s*$/), en = m ? m[1] : c.name, ko = m ? m[2] : "";
-  const sub = c.sub.match(/^(\d+-[A-Z])\s+(.*)$/) || [null, "", c.sub];
-  const glassEn = (c.glass.split("(")[0] || c.glass).trim();
-  const abv = c.abv === null ? "도수 조절" : c.abv === 0 ? "논알콜" : `<b>${c.abv}</b>%<small>ABV</small>(=${c.abv}°)`;
+  const g = c.glass.match(/\(([^)]*)\)/), glassKo = (g ? g[1] : c.glass).split("=")[0].replace(/\s*\d+ml/, "").trim();
+  const abv = c.abv === null ? "주문할 때 조절" : c.abv === 0 ? "논알콜" : `${c.abv}%`;
   return `
-  <article class="item${k === 0 ? " first" : ""}"><span class="rank">No.${k + 1}</span>
-    <h3><span class="n">아카이브 No.${c.n}</span><span class="en">${esc(en)}</span>${ko ? `<span class="ko">(${esc(ko)})</span>` : ""}</h3>
-    <div class="line">${esc(lineOf(c))}</div>
-    <div class="spec"><span>${esc(glassEn)}${c.hot ? ", 따뜻하게" : ""}</span><span>${abv}</span></div>
-    <div class="chapter"><b>${esc(sub[1])}</b>${esc(sub[2])}, ${esc(c.chName)}</div>
-    <div class="match"><i style="--w:${pct}%"></i><span>시그널 일치 ${pct}%</span></div>
-    <div class="why-list">${r.hits.map(h => `<span>${esc(h)}</span>`).join("")}</div>
+  <article class="item${k === 0 ? " first" : ""}">
+    <div class="rank"><span>${["첫 번째 잔", "두 번째 잔", "세 번째 잔"][k] || ""}</span><span>시그널 일치 ${pct}%</span></div>
+    <h3><span class="en">${esc(en)}</span>${ko ? `<span class="ko">${esc(ko)}</span>` : ""}</h3>
+    <div class="line">${esc(lineOf(c)).replace(/ 한 잔$/, "&nbsp;한&nbsp;잔")}</div>
+    <dl class="spec"><div><dt>잔</dt><dd>${esc(glassKo)}${c.hot ? ", 따뜻하게" : ""}</dd></div><div><dt>도수</dt><dd>${abv}</dd></div></dl>
+    <p class="hits">맞은 답: ${r.hits.map(esc).join(", ")}</p>
     ${origin(c)}
     <div class="order" data-n="${c.n}" data-name="${esc(c.name)}"></div>
   </article>`;
 }
-function renderIntro() {
-  step = -1; paint();
-  app.innerHTML = `
-    <section class="hero">
-      <img class="logo" src="nc-logo.png" alt="NERDCONNECT, Crafted for unique minds">
-      <div class="dash2"></div>
-      <div class="bar"><img src="nm-emblem.png" alt="">NM_ NECTMELE SIGNAL</div>
-      <div class="sub">(NM : 넥트멜레 취향 시그널)</div>
-      <p class="motto">“열 개의 시험관을 채우면, 200잔의 아카이브에서 당신과 연결된 잔이 보이는 밤”</p>
-      <div class="en">Ten signals. Two hundred glasses. One connection.</div>
-      <div aria-hidden="true"><div class="rack">${Q.map(() => `<div class="tube"><i></i></div>`).join("")}</div><div class="rack-base"></div></div>
-      <p class="how">질문 10개, 2분이면 끝나요. 답할 때마다 시험관이 하나씩 차올라요.</p>
-      <button class="btn" id="start">시그널 채우기 시작</button>
-    </section>`;
-  document.getElementById("start").addEventListener("click", () => go(1));
-}
 
+// ---- 주문과 승인 ----
 const SB = "https://uitmbiolzywpalifwxfs.supabase.co", SBK = "sb_publishable_VDs5z3a_4Yfh1NT7uK7wUg_Ztbki5fZ";
 async function rpc(fn, body) {
   const r = await fetch(`${SB}/rest/v1/rpc/${fn}`, { method: "POST", headers: { apikey: SBK, "Content-Type": "application/json" }, body: JSON.stringify(body) });
   if (!r.ok) throw new Error(r.status);
   return r.json();
 }
-const mem = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { v === null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) {} } };
-let orderId = mem.get("nm_order"), orderN = Number(mem.get("nm_order_n")) || null, pollT = null;
+// 고른 잔들: {칵테일 번호: {id, at, st}}. 12시간 지나면 잊는다. 저장이 막힌 브라우저에서도 이번 화면에서는 동작한다.
+let orders = {}, pollT = null;
+try { orders = JSON.parse(localStorage.getItem("nm_orders") || "{}"); } catch (e) {}
+for (const n in orders) if (Date.now() - orders[n].at > 12 * 3600e3) delete orders[n];
+function saveOrders() { try { localStorage.setItem("nm_orders", JSON.stringify(Object.fromEntries(Object.entries(orders).map(([n, o]) => [n, { id: o.id, at: o.at }])))); } catch (e) {} }
+const statusOf = o => o.st ? o.st.status : "pending";
 function recipeHTML(r) {
+  const t = s => esc(String(s || "").replace(/\r/g, ""));
   return `<div class="got"><h4>레시피가 열렸어요</h4><dl class="recipe">
-    <dt>잔</dt><dd>${esc(r.glass)}</dd><dt>재료</dt><dd>${esc(r.ing)}</dd><dt>만드는 법</dt><dd>${esc(r.method)}</dd>
-    ${r.garnish ? `<dt>마무리</dt><dd>${esc(r.garnish)}</dd>` : ""}
-    ${r.hot ? `<dd class="note">따뜻한 칵테일이에요. 뜨거운 물은 Connector에게 부탁해 주세요.</dd>` : ""}</dl></div>`;
+    <div><dt>잔</dt><dd>${t(r.glass)}</dd></div><div><dt>재료</dt><dd>${t(r.ing)}</dd></div><div><dt>만드는 법</dt><dd>${t(r.method)}</dd></div>
+    ${r.garnish ? `<div><dt>마무리</dt><dd>${t(r.garnish)}</dd></div>` : ""}
+    ${r.hot ? `<div><dd>따뜻한 칵테일이에요. 뜨거운 물은 Connector에게 부탁해 주세요.</dd></div>` : ""}</dl></div>`;
 }
-function paintOrders(state) {
+function stateHTML(o) {
+  const s = statusOf(o);
+  if (s === "approved") return recipeHTML(o.st.recipe);
+  if (s === "declined") return `<div class="wait">Connector가 다른 잔을 권하고 싶어 해요.<small>바에서 이야기 나눠 주세요. 다른 잔을 다시 골라도 돼요.</small></div>`;
+  return `<div class="wait on">Connector에게 보냈어요. 확인하면 여기에 레시피가 열려요.<small>이 화면을 켜 둔 채로 기다려 주세요.</small></div>`;
+}
+function paintOrders() {
+  const pending = Object.values(orders).some(o => statusOf(o) === "pending");
+  const shown = new Set();
   document.querySelectorAll(".order").forEach(box => {
-    const n = Number(box.dataset.n), mine = orderId && n === orderN;
-    if (mine && state && state.status === "approved") { box.innerHTML = recipeHTML(state.recipe); return; }
-    if (mine && state && state.status === "declined") {
-      box.innerHTML = `<div class="wait"><span class="vial" style="--c:#DCD8D2"></span><span>Connector가 다른 잔을 권하고 싶어 해요.<small>바에서 이야기 나눠 주세요. 다른 잔을 다시 골라도 돼요.</small></span></div>`;
-      return;
-    }
-    if (mine) {
-      box.innerHTML = `<div class="wait"><span class="vial" aria-hidden="true"></span><span>Connector에게 보냈어요. 확인하면 여기에 레시피가 열려요.<small>이 화면을 켜 둔 채로 기다려 주세요.</small></span></div>`;
-      return;
-    }
-    const busy = orderId && !(state && state.status === "declined");
-    box.innerHTML = `<button class="btn line" ${busy ? "disabled" : ""}>${busy ? "앞서 고른 잔을 Connector가 확인 중이에요" : "이 잔으로 할게요"}</button>`;
+    const n = box.dataset.n; shown.add(n);
+    if (box.querySelector("input") && !orders[n]) return;   // 자리 적는 중이면 건드리지 않는다
+    const o = orders[n];
+    if (o) { box.innerHTML = stateHTML(o); return; }
+    box.innerHTML = `<button class="btn${box.closest(".first") ? "" : " line"}" ${pending ? "disabled" : ""}>${pending ? "앞서 고른 잔을 확인 중이에요" : "이 잔으로 할게요"}</button>`;
     box.querySelector("button").addEventListener("click", () => askSeat(box));
   });
+  const mine = document.querySelector(".mine");
+  if (mine) mine.innerHTML = Object.entries(orders).filter(([n, o]) => !shown.has(n) && statusOf(o) !== "declined").map(([n, o]) => {
+    const c = DATA.find(x => String(x.n) === n); return `<div class="box"><b>앞서 고른 잔, ${esc(c ? c.name : "")}</b>${stateHTML(o)}</div>`;
+  }).join("");
 }
 function askSeat(box) {
-  box.innerHTML = `<label>앉은 자리 (모르면 비워 두세요)<input maxlength="20" placeholder="예: 바 3번, 창가 테이블"></label>
+  box.innerHTML = `<label>앉은 자리 (모르면 비워 두세요)<input maxlength="20" placeholder="예: 바 3번"></label>
     <button class="btn">Connector에게 보내기</button><button class="btn text">취소</button>`;
   const [send, cancel] = box.querySelectorAll("button"), input = box.querySelector("input");
   input.focus();
-  cancel.addEventListener("click", () => paintOrders(null));
+  cancel.addEventListener("click", () => { box.innerHTML = ""; paintOrders(); });
   send.addEventListener("click", async () => {
     send.disabled = true; send.textContent = "보내는 중이에요";
     try {
-      const n = Number(box.dataset.n);
-      orderId = await rpc("nm_order", { p_n: n, p_name: box.dataset.name, p_seat: input.value.trim(), p_answers: ans });
-      orderN = n; mem.set("nm_order", orderId); mem.set("nm_order_n", String(n));
-      paintOrders(null); poll();
+      const id = await rpc("nm_order", { p_n: Number(box.dataset.n), p_name: box.dataset.name, p_seat: input.value.trim(), p_answers: ans });
+      orders[box.dataset.n] = { id, at: Date.now() }; saveOrders(); paintOrders(); poll();
     } catch (e) {
       send.disabled = false; send.textContent = "다시 보내기";
-      if (!box.querySelector(".err")) box.insertAdjacentHTML("beforeend", `<div class="err">보내지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요. 계속 안 되면 Connector에게 말해 주세요.</div>`);
+      if (!box.querySelector(".err")) box.insertAdjacentHTML("beforeend", `<div class="err" role="alert">보내지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요. 계속 안 되면 Connector에게 말해 주세요.</div>`);
     }
   });
 }
 async function poll() {
   clearTimeout(pollT);
-  if (!orderId) return;
-  try {
-    const st = await rpc("nm_status", { p_id: orderId });
-    if (!st) { orderId = null; mem.set("nm_order", null); paintOrders(null); return; }
-    paintOrders(st);
-    if (st.status === "pending") pollT = setTimeout(poll, 3000);
-    else if (st.status === "declined") { orderId = null; mem.set("nm_order", null); }
-  } catch (e) { pollT = setTimeout(poll, 6000); }
+  let wait = 3000, changed = false;
+  for (const n of Object.keys(orders)) {
+    const o = orders[n];
+    if (o.st && o.st.status !== "pending") continue;
+    try {
+      const st = await rpc("nm_status", { p_id: o.id });
+      if (!st) { delete orders[n]; saveOrders(); changed = true; continue; }
+      if (!o.st || o.st.status !== st.status) changed = true;
+      o.st = st;
+    } catch (e) { wait = 6000; }
+  }
+  if (changed) paintOrders();
+  if (Object.values(orders).some(o => statusOf(o) === "pending")) pollT = setTimeout(poll, wait);
 }
+
 function renderResult() {
   step = Q.length; paint();
   const ranked = DATA.map(score).filter(Boolean).sort((a, b) => b.s - a.s || a.c.n - b.c.n);
@@ -444,30 +449,21 @@ function renderResult() {
     const alt = ranked.find(r => r.c.style.includes(want) && !picks.includes(r));
     if (alt) { if (picks.length >= 3) picks.pop(); picks.push(alt); }
   }
-  const layers = Q.map((_, i) => colorOf(i) || "#DCD8D2");
   app.innerHTML = picks.length ? `
-    <section class="q">
-      <div class="result-top">
-        <div class="big-tube" aria-hidden="true">${layers.map(c => `<span style="--c:${c}"></span>`).join("")}</div>
-        <div>
-          <h2>당신의 시그널에 연결된 ${picks.length}잔</h2>
-          <p>열 개의 답을 한 시험관에 쌓았어요. 200잔 아카이브에서 이 시그널과 가장 가까운 잔이에요. 첫 번째 잔이 가장 강한 신호예요. 마음에 드는 잔을 고르면 Connector가 확인한 뒤 레시피가 열려요.</p>
-        </div>
-      </div>
+    <section>
+      <div class="reshead"><h2 tabindex="-1">당신과<br>연결된 ${picks.length}잔</h2><p>마음에 드는 잔을 고르면 Connector가 확인한 뒤 레시피가 열려요.</p></div>
+      <div class="mine"></div>
       <div class="picks">${picks.map((r, k) => item(r, maxScore(), k)).join("")}</div>
-      <div class="coda">
-        <div class="bar">2026, SINLIM</div>
-        <p>아카이브의 마지막 장은 너드커넥트의 시그니처예요.<br>오늘의 시그널을 Connector에게 보여 주면 이어지는 시그니처를 소개해 드려요.</p>
-      </div>
-      <div class="nav"><button class="btn text" id="back">마지막 질문으로</button><button class="btn" id="again">처음부터 다시</button></div>
+      <p class="coda">아카이브의 마지막 장은 너드커넥트의 시그니처예요. 이 화면을 Connector에게 보여 주면 이어지는 시그니처를 소개해 드려요.</p>
+      <div class="endnav"><button class="btn line" id="again">처음부터 다시</button><button class="btn text" id="back">마지막 질문으로</button></div>
     </section>` : `
-    <section class="q"><div class="err">고른 조건을 모두 지키는 잔이 없어요. '이건 빼 주세요'에서 하나를 풀고 다시 찾아 주세요.</div>
-      <div class="nav"><button class="btn text" id="back">'빼 주세요'로 돌아가기</button><button class="btn" id="again">처음부터 다시</button></div></section>`;
-  if (picks.length) { paintOrders(null); poll(); }
-  document.getElementById("back").addEventListener("click", () => { step = picks.length ? Q.length - 1 : Q.findIndex(q => q.id === "no"); renderQ(); });
+    <section class="q"><div class="reshead"><h2 tabindex="-1">딱 맞는 잔이<br>없어요</h2><p>빼 달라고 한 재료를 하나 풀면 다시 찾을 수 있어요.</p></div>
+      <div class="endnav"><button class="btn" id="back">'빼 주세요' 질문으로</button><button class="btn text" id="again">처음부터 다시</button></div></section>`;
+  paintOrders(); poll();
+  document.getElementById("back").addEventListener("click", () => { step = picks.length ? Q.length - 1 : Q.findIndex(q => q.id === "no"); go(0); });
   document.getElementById("again").addEventListener("click", () => { ans = {}; go(-99); });
 }
 fetch("cocktails.json").then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
-  .then(d => { DATA = d; renderIntro(); })
-  .catch(() => { app.innerHTML = `<div class="err">칵테일 목록을 불러오지 못했어요. 페이지를 새로고침해 주세요.</div>`; });
-</script>
+  .then(d => { DATA = d; renderIntro(); poll(); })
+  .catch(() => { app.innerHTML = `<div class="err" role="alert">칵테일 목록을 불러오지 못했어요. 페이지를 새로고침해 주세요.</div>`; });
+</script></body></html>
