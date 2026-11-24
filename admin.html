@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>넥트멜레 주문 확인</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@900&family=Nanum+Myeongjo:wght@800&family=Nanum+Gothic:wght@400;700;800&display=swap">
+<style>
+/* 매장 기기에 켜 두는 Connector용 화면. 손님 페이지와 같은 메뉴판 언어(흰 종이, 먹색, 검은 띠). */
+:root { --paper: #FFFFFF; --ink: #231815; --gray: #6E6764; --nm: #45C2C6; --nm-deep: #1F8F94; --tint: #F5F3F0; --red: #A3312A;
+  --title: "Cinzel Decorative", Georgia, serif; --serif: "Nanum Myeongjo", serif; --sans: "Nanum Gothic", "Malgun Gothic", sans-serif; color-scheme: light; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 1.55; word-break: keep-all; overflow-wrap: break-word; }
+.wrap { max-width: 640px; margin: 0 auto; padding: 0 16px 48px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; }
+.top { position: sticky; top: 0; background: var(--paper); padding: 12px 0 10px; border-bottom: 2px solid var(--ink); display: flex; justify-content: space-between; align-items: center; gap: 10px; z-index: 2; }
+.brand { display: inline-flex; align-items: center; gap: 7px; background: var(--ink); color: var(--paper); border-radius: 8px; padding: 4px 11px 3px 6px; font-family: var(--title); font-weight: 900; font-size: 14px; }
+.brand img { width: 20px; height: 20px; }
+.state { font-size: 13.5px; color: var(--gray); text-align: right; }
+.state b { color: var(--nm-deep); }
+h2 { margin: 6px 0 0; font-family: var(--serif); font-weight: 800; font-size: 22px; }
+.btn { font: inherit; font-weight: 800; font-size: 16px; cursor: pointer; background: var(--ink); color: var(--paper); border: 0; border-radius: 10px; padding: 13px 18px; }
+.btn.line { background: var(--paper); color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--ink); }
+.btn.ok { background: var(--nm-deep); }
+.btn.text { background: none; color: var(--ink); text-decoration: underline; padding: 6px 2px; font-size: 14px; }
+.btn:focus-visible, input:focus-visible { outline: 3px solid var(--nm-deep); outline-offset: 3px; }
+.login { display: grid; gap: 12px; padding-top: 12px; }
+.login label { display: grid; gap: 4px; font-size: 14px; color: var(--gray); }
+input { font: inherit; padding: 11px 12px; border: 1.5px solid var(--ink); border-radius: 10px; width: 100%; color: var(--ink); }
+.alarm { background: var(--tint); border-radius: 12px; padding: 14px; display: grid; gap: 10px; }
+.alarm p { margin: 0; font-size: 14.5px; }
+.card { border: 2px solid var(--ink); border-radius: 12px; padding: 16px; display: grid; gap: 10px; }
+.card.new { animation: ring 1s ease-in-out 3; }
+@keyframes ring { 50% { background: #E3F6F6; } }
+.card .meta { display: flex; justify-content: space-between; gap: 10px; font-size: 14px; color: var(--gray); }
+.card .seat { font-weight: 800; color: var(--ink); font-size: 16px; }
+.card h3 { margin: 0; font-size: 22px; line-height: 1.3; }
+.card h3 small { display: block; font-size: 14px; color: var(--gray); font-weight: 400; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips span { font-size: 13px; background: var(--tint); border-radius: 6px; padding: 1px 8px; }
+.acts { display: grid; grid-template-columns: 2fr 1fr; gap: 10px; }
+.empty { border: 1.5px dashed var(--ink); border-radius: 12px; padding: 18px; text-align: center; color: var(--gray); }
+.done { display: grid; gap: 0; }
+.done div { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; padding: 9px 0; border-bottom: 1.5px dotted var(--ink); font-size: 14.5px; align-items: baseline; }
+.done time { color: var(--gray); font-size: 13px; }
+.tag { font-size: 12.5px; font-weight: 800; border-radius: 5px; padding: 0 6px; background: var(--ink); color: var(--paper); }
+.tag.no { background: var(--red); }
+.err { border: 2px solid var(--red); color: var(--red); border-radius: 10px; padding: 10px 12px; font-size: 14.5px; }
+@media (prefers-reduced-motion: reduce) { .card.new { animation: none; background: #E3F6F6; } }
+</style>
+<div class="wrap">
+  <header class="top"><span class="brand"><img src="nm-emblem.png" alt="">NECTMELE</span><span class="state" id="state"></span></header>
+  <main id="app"></main>
+</div>
+<script>
+const SB = "https://uitmbiolzywpalifwxfs.supabase.co", SBK = "sb_publishable_VDs5z3a_4Yfh1NT7uK7wUg_Ztbki5fZ";
+const app = document.getElementById("app"), stateEl = document.getElementById("state");
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const mem = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { v === null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) {} } };
+let token = null, tokenExp = 0, seen = new Set(), first = true, audio = null, wake = null, pollT = null, lastErr = "";
+
+async function auth(body, grant) {
+  const r = await fetch(`${SB}/auth/v1/token?grant_type=${grant}`, { method: "POST", headers: { apikey: SBK, "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(d.error_description || d.msg || `로그인 실패 (${r.status})`);
+  token = d.access_token; tokenExp = Date.now() + (d.expires_in - 120) * 1000;
+  mem.set("nm_admin_rt", d.refresh_token); // 비밀번호는 저장하지 않는다
+}
+async function ensureToken() {
+  if (token && Date.now() < tokenExp) return;
+  const rt = mem.get("nm_admin_rt");
+  if (!rt) throw new Error("login");
+  try { await auth({ refresh_token: rt }, "refresh_token"); }
+  catch (e) { if (!navigator.onLine) throw e; mem.set("nm_admin_rt", null); throw new Error("다시 로그인이 필요해요"); }
+}
+async function api(path, opt = {}) {
+  await ensureToken();
+  const r = await fetch(`${SB}/rest/v1/${path}`, { ...opt, headers: { apikey: SBK, Authorization: `Bearer ${token}`, "Content-Type": "application/json", ...(opt.headers || {}) } });
+  if (r.status === 401) { token = null; throw new Error("다시 로그인이 필요해요"); }
+  if (!r.ok) throw new Error(`불러오지 못했어요 (${r.status})`);
+  return r.status === 204 ? null : r.json();
+}
+
+function showLogin(msg) {
+  stateEl.textContent = "";
+  app.innerHTML = `<section class="login"><h2>Connector 로그인</h2>
+    <p style="margin:0;color:var(--gray);font-size:14.5px">소셜 스튜디오 앱과 같은 이메일, 비밀번호예요. 한 번 로그인하면 이 기기에서는 계속 유지돼요.</p>
+    ${msg ? `<div class="err">${esc(msg)}</div>` : ""}
+    <label>이메일<input id="em" type="email" autocomplete="username"></label>
+    <label>비밀번호<input id="pw" type="password" autocomplete="current-password"></label>
+    <button class="btn" id="go">로그인</button></section>`;
+  const go = async () => {
+    try { await auth({ email: em.value.trim(), password: pw.value }, "password"); start(); }
+    catch (e) { showLogin(e.message.includes("Invalid") ? "이메일이나 비밀번호가 맞지 않아요. 다시 입력해 주세요." : e.message); }
+  };
+  document.getElementById("go").addEventListener("click", go);
+  document.getElementById("pw").addEventListener("keydown", e => { if (e.key === "Enter") go(); });
+}
+
+function beep() {
+  if (!audio) return;
+  const t = audio.currentTime;
+  [0, .22, .44].forEach((d, i) => {
+    const o = audio.createOscillator(), g = audio.createGain();
+    o.frequency.value = [880, 1175, 1568][i]; o.type = "sine";
+    g.gain.setValueAtTime(0, t + d); g.gain.linearRampToValueAtTime(.35, t + d + .02); g.gain.exponentialRampToValueAtTime(.001, t + d + .2);
+    o.connect(g).connect(audio.destination); o.start(t + d); o.stop(t + d + .22);
+  });
+  if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+}
+async function armAlarm() {
+  try { audio = new (window.AudioContext || window.webkitAudioContext)(); await audio.resume(); beep(); } catch (e) {}
+  try { if ("wakeLock" in navigator) wake = await navigator.wakeLock.request("screen"); } catch (e) {}
+  render(window._last || []);
+}
+document.addEventListener("visibilitychange", async () => {
+  if (document.visibilityState === "visible" && audio && "wakeLock" in navigator) { try { wake = await navigator.wakeLock.request("screen"); } catch (e) {} }
+});
+
+const LBL = { lvl: "취함", drink: "평소 술", fav: "좋았던 잔", style: "마시는 방식", sweet: "단맛", taste: "맛", fruit: "향", no: "빼기", era: "시대", signal: "시그널" };
+function chips(a) {
+  if (!a) return "";
+  return Object.keys(LBL).filter(k => a[k] !== undefined && !(Array.isArray(a[k]) && !a[k].length))
+    .map(k => `<span>${LBL[k]}: ${esc(Array.isArray(a[k]) ? a[k].join(", ") : a[k])}</span>`).join("");
+}
+const hm = s => new Date(s).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" });
+const ago = s => { const m = Math.round((Date.now() - new Date(s)) / 60000); return m < 1 ? "방금" : `${m}분 전`; };
+
+function render(rows) {
+  window._last = rows;
+  const pend = rows.filter(r => r.status === "pending"), done = rows.filter(r => r.status !== "pending");
+  stateEl.innerHTML = `대기 <b>${pend.length}</b>건, 오늘 ${rows.length}건<br>${lastErr ? `<span style="color:var(--red)">${esc(lastErr)}</span>` : "4초마다 새로 확인해요"}`;
+  app.innerHTML = `
+    ${audio ? "" : `<section class="alarm"><p>새 주문이 오면 소리와 진동으로 알려 드려요. 이 기기에서 한 번 눌러 주세요. 화면도 꺼지지 않게 유지해요.</p><button class="btn" id="arm">알림 소리 켜기</button></section>`}
+    <h2>확인할 주문</h2>
+    ${pend.length ? pend.map(r => `
+      <article class="card${seen.has(r.id) ? "" : " new"}" data-id="${r.id}">
+        <div class="meta"><span class="seat">${esc(r.seat || "자리 안 적음")}</span><span>${hm(r.created_at)}, ${ago(r.created_at)}</span></div>
+        <h3>No.${r.pick_n} ${esc(r.pick_name)}<small>손님이 이 잔을 골랐어요. 결제를 확인하고 승인하면 손님 화면에 레시피가 열려요.</small></h3>
+        <div class="chips">${chips(r.answers)}</div>
+        <div class="acts"><button class="btn ok" data-act="approved">승인하고 레시피 열기</button><button class="btn line" data-act="declined">다른 잔 권하기</button></div>
+      </article>`).join("") : `<div class="empty">들어온 주문이 없어요. 새 주문이 오면 여기에 떠요.</div>`}
+    <h2>오늘 처리한 주문</h2>
+    <div class="done">${done.length ? done.map(r => `<div><time>${hm(r.created_at)}</time><span>${esc(r.seat || "-")}, No.${r.pick_n} ${esc(r.pick_name)}</span><span class="tag${r.status === "declined" ? " no" : ""}">${r.status === "approved" ? "승인" : "다른 잔"}</span></div>`).join("") : `<p style="color:var(--gray);margin:0">아직 없어요.</p>`}</div>
+    <button class="btn text" id="out">이 기기에서 로그아웃</button>`;
+  pend.forEach(r => seen.add(r.id));
+  const arm = document.getElementById("arm"); if (arm) arm.addEventListener("click", armAlarm);
+  document.getElementById("out").addEventListener("click", () => { mem.set("nm_admin_rt", null); token = null; clearTimeout(pollT); showLogin(""); });
+  app.querySelectorAll(".card .btn").forEach(b => b.addEventListener("click", async () => {
+    const id = b.closest(".card").dataset.id;
+    b.disabled = true;
+    try {
+      await api(`nm_orders?id=eq.${id}`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ status: b.dataset.act, decided_at: new Date().toISOString() }) });
+      await load();
+    } catch (e) { b.disabled = false; lastErr = `처리하지 못했어요. 다시 눌러 주세요. (${e.message})`; render(window._last); }
+  }));
+}
+async function load() {
+  const since = new Date(); since.setHours(since.getHours() < 6 ? -18 : 6, 0, 0, 0); // 영업일 기준: 새벽 6시에 하루가 바뀜
+  const rows = await api(`nm_orders?select=id,created_at,seat,pick_n,pick_name,answers,status&created_at=gte.${encodeURIComponent(since.toISOString())}&order=created_at.desc&limit=200`);
+  const fresh = rows.filter(r => r.status === "pending" && !seen.has(r.id));
+  if (fresh.length && !first) { beep(); document.title = `🔔 새 주문 ${fresh.length}건`; setTimeout(() => document.title = "넥트멜레 주문 확인", 8000); }
+  first = false; lastErr = "";
+  render(rows);
+}
+async function tick() {
+  clearTimeout(pollT);
+  try { await load(); }
+  catch (e) {
+    if (e.message === "login" || e.message.includes("로그인")) { showLogin(e.message === "login" ? "" : e.message); return; }
+    lastErr = navigator.onLine ? e.message : "인터넷이 끊겼어요. 연결되면 자동으로 다시 확인해요.";
+    render(window._last || []);
+  }
+  pollT = setTimeout(tick, 4000);
+}
+function start() { first = true; seen = new Set(); tick(); }
+mem.get("nm_admin_rt") ? start() : showLogin("");
+</script>
